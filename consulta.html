@@ -21,11 +21,13 @@
     main{max-width:1240px;margin:auto;padding:28px 20px 60px}.title-row{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:24px}
     h1{font-size:34px;letter-spacing:-.05em;margin:0 0 5px}.subtitle{color:var(--muted);margin:0}
     .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}.stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}.stat b{font-size:27px;display:block}.stat span{font-size:12px;color:var(--muted)}
-    .filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:9px;background:#fff;border:1px solid var(--line);padding:13px;border-radius:16px;margin-bottom:15px}.filters input,.filters select{margin:0}.filters button{border:0;background:var(--dark);color:#fff;border-radius:10px;padding:0 15px;font-weight:800;cursor:pointer}
+    .filters,.admin-create{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:9px;background:#fff;border:1px solid var(--line);padding:13px;border-radius:16px;margin-bottom:15px}.filters input,.filters select,.admin-create input,.admin-create select{margin:0}.filters button,.admin-create button{border:0;background:var(--dark);color:#fff;border-radius:10px;padding:0 15px;font-weight:800;cursor:pointer}
+    .tabs{display:flex;gap:8px;margin:0 0 18px}.tabs button{border:1px solid var(--line);background:#fff;color:var(--dark);border-radius:10px;padding:10px 13px;font-weight:900;cursor:pointer}.tabs button.active{background:var(--dark);color:#fff;border-color:var(--dark)}
+    .admin-panel{margin-top:30px}.admin-note{background:#fff4cf;border:1px solid #ead17f;color:#705a12;border-radius:12px;padding:13px;margin:0 0 15px;font-size:13px}.user-actions{display:grid;grid-template-columns:1fr 100px 92px auto;gap:8px;align-items:center}.user-actions select{margin:0;padding:9px}.user-actions button{border:0;background:#267153;color:#fff;border-radius:9px;padding:10px;font-weight:800;cursor:pointer}.user-actions button[disabled]{opacity:.55;cursor:not-allowed}
     .table-wrap{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:auto}table{width:100%;border-collapse:collapse;min-width:920px}th,td{text-align:left;border-bottom:1px solid #e7eee9;padding:13px;font-size:12px}th{color:var(--muted);font-size:10px;letter-spacing:.06em;background:#f9fbf9}tr:last-child td{border:0}.open-row{border:0;background:none;color:#267153;font-weight:900;cursor:pointer}.badge{display:inline-block;border-radius:20px;padding:5px 8px;background:#e5f4e8;color:#267153;font-weight:800}.badge.finished{background:#edf0ee;color:#62716b}
     .empty{text-align:center!important;color:var(--muted);padding:38px!important}
     dialog{width:min(760px,calc(100% - 30px));border:0;border-radius:20px;padding:0;box-shadow:0 25px 80px #0008}dialog::backdrop{background:#09100dbb}.dialog-head{padding:20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px}.dialog-head h2{margin:0}.dialog-head button{border:0;background:#edf2ee;border-radius:9px;width:36px;height:36px;cursor:pointer}.dialog-body{padding:20px;max-height:70vh;overflow:auto}.detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px}.detail-grid div{background:#f5f8f6;border-radius:10px;padding:11px}.detail-grid small,.detail-grid strong{display:block}.detail-grid small{color:var(--muted);margin-bottom:3px}.scan-row{display:grid;grid-template-columns:75px 1fr 125px 145px;gap:9px;border-top:1px solid var(--line);padding:11px 0;font-size:12px}.scan-row strong{overflow-wrap:anywhere}
-    @media(max-width:760px){header .user-email{display:none}.title-row{align-items:start;flex-direction:column}.stats{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr 1fr}.filters .search{grid-column:1/-1}.filters button{padding:13px}.detail-grid{grid-template-columns:1fr}.scan-row{grid-template-columns:65px 1fr}.scan-row span:nth-last-child(-n+2){color:var(--muted)}}
+    @media(max-width:760px){header .user-email{display:none}.title-row{align-items:start;flex-direction:column}.stats{grid-template-columns:repeat(2,1fr)}.filters,.admin-create{grid-template-columns:1fr 1fr}.filters .search,.admin-create input:first-child{grid-column:1/-1}.filters button,.admin-create button{padding:13px}.detail-grid{grid-template-columns:1fr}.scan-row{grid-template-columns:65px 1fr}.scan-row span:nth-last-child(-n+2){color:var(--muted)}.user-actions{grid-template-columns:1fr}.user-actions button{padding:12px}}
   </style>
 </head>
 <body>
@@ -48,6 +50,8 @@
       <nav><span id="user-email" class="user-email"></span><a href="./">Coletor</a><button id="logout">Sair</button></nav>
     </header>
     <main>
+      <div class="tabs"><button id="tab-collections" class="active" type="button">Coletas</button><button id="tab-admin" class="hidden" type="button">Admin</button></div>
+      <section id="collections-panel">
       <div class="title-row"><div><h1>Histórico de coletas</h1><p class="subtitle">Auditoria centralizada de tudo que foi carregado.</p></div></div>
       <section class="stats">
         <div class="stat"><b id="stat-collections">0</b><span>coletas</span></div>
@@ -68,6 +72,25 @@
           <tbody id="rows"><tr><td class="empty" colspan="10">Carregando...</td></tr></tbody>
         </table>
       </div>
+      </section>
+      <section id="admin-panel" class="admin-panel hidden">
+        <div class="title-row"><div><h1>Painel admin</h1><p class="subtitle">Cadastro e permissões de acesso ao coletor.</p></div></div>
+        <p class="admin-note">Novos usuários entram como visualizadores inativos até um admin liberar. A alteração de permissões é validada no banco, e o admin logado não consegue remover o próprio acesso administrativo.</p>
+        <form id="admin-create" class="admin-create">
+          <input id="new-email" type="email" placeholder="E-mail do novo usuário" autocomplete="off" required>
+          <input id="new-password" type="password" placeholder="Senha temporária" autocomplete="new-password" required>
+          <select id="new-role"><option value="operator">Operador</option><option value="viewer">Consulta</option><option value="admin">Admin</option></select>
+          <select id="new-active"><option value="true">Ativo</option><option value="false">Inativo</option></select>
+          <button type="submit">Adicionar</button>
+        </form>
+        <p id="admin-message" class="message"></p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>E-MAIL</th><th>NOME</th><th>PERFIL</th><th>STATUS</th><th>AÇÃO</th></tr></thead>
+            <tbody id="user-rows"><tr><td class="empty" colspan="5">Carregando...</td></tr></tbody>
+          </table>
+        </div>
+      </section>
     </main>
   </section>
 
@@ -85,7 +108,7 @@
       const config=window.NK_SUPABASE||{};
       const configured=Boolean(config.url&&config.publishableKey);
       const client=configured?window.supabase.createClient(config.url,config.publishableKey):null;
-      let collections=[],filtered=[];
+      let collections=[],filtered=[],profiles=[],currentUser=null,currentProfile=null;
       const escapeHtml=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
       const formatDate=value=>value?new Date(value).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"}):"—";
 
@@ -97,8 +120,15 @@
       }
       function showLogin(){$("login").classList.remove("hidden");$("app").classList.add("hidden")}
       async function showApp(user){
+        currentUser=user;
         $("login").classList.add("hidden");$("app").classList.remove("hidden");$("user-email").textContent=user.email||"";
+        await loadCurrentProfile();
         await loadCollections();
+      }
+      async function loadCurrentProfile(){
+        const {data}=await client.from("profiles").select("id,email,role,active").eq("id",currentUser.id).maybeSingle();
+        currentProfile=data||null;
+        $("tab-admin").classList.toggle("hidden",!(currentProfile&&currentProfile.role==="admin"&&currentProfile.active));
       }
       async function loadCollections(){
         $("rows").innerHTML='<tr><td class="empty" colspan="10">Carregando...</td></tr>';
@@ -128,6 +158,54 @@
           return `<tr><td><strong>${escapeHtml(c.collection_code)}</strong></td><td>${escapeHtml(formatDate(c.started_at))}</td><td>${escapeHtml(c.carrier)}</td><td>${escapeHtml(c.plate)}</td><td>${escapeHtml(c.driver)}</td><td>${escapeHtml(c.operator_email)}</td><td>${pedidos}</td><td>${nfs}</td><td><span class="badge ${c.status==="finished"?"finished":""}">${c.status==="finished"?"Finalizada":"Em andamento"}</span></td><td><button class="open-row" data-id="${c.id}">Abrir</button></td></tr>`;
         }).join(""):'<tr><td class="empty" colspan="10">Nenhuma coleta encontrada.</td></tr>';
       }
+      function showPanel(panel){
+        const admin=panel==="admin";
+        $("collections-panel").classList.toggle("hidden",admin);
+        $("admin-panel").classList.toggle("hidden",!admin);
+        $("tab-collections").classList.toggle("active",!admin);
+        $("tab-admin").classList.toggle("active",admin);
+        if(admin)loadProfiles();
+      }
+      async function loadProfiles(){
+        if(!(currentProfile&&currentProfile.role==="admin"&&currentProfile.active))return;
+        $("user-rows").innerHTML='<tr><td class="empty" colspan="5">Carregando...</td></tr>';
+        const {data,error}=await client.from("profiles").select("id,email,full_name,role,active,created_at").order("email");
+        if(error){$("user-rows").innerHTML=`<tr><td class="empty" colspan="5">${escapeHtml(error.message)}</td></tr>`;return;}
+        profiles=data||[];
+        $("user-rows").innerHTML=profiles.length?profiles.map(profileRow).join(""):'<tr><td class="empty" colspan="5">Nenhum usuário encontrado.</td></tr>';
+      }
+      function profileRow(p){
+        const self=p.id===currentUser.id;
+        return `<tr data-user-id="${escapeHtml(p.id)}"><td><strong>${escapeHtml(p.email)}</strong></td><td>${escapeHtml(p.full_name||"—")}</td><td><select data-field="role" ${self?"disabled":""}><option value="viewer" ${p.role==="viewer"?"selected":""}>Consulta</option><option value="operator" ${p.role==="operator"?"selected":""}>Operador</option><option value="admin" ${p.role==="admin"?"selected":""}>Admin</option></select></td><td><select data-field="active" ${self?"disabled":""}><option value="true" ${p.active?"selected":""}>Ativo</option><option value="false" ${!p.active?"selected":""}>Inativo</option></select></td><td><div class="user-actions"><span>${self?"Usuário atual":""}</span><button data-save-user ${self?"disabled":""}>Salvar</button></div></td></tr>`;
+      }
+      async function updateProfile(row){
+        const id=row.dataset.userId,role=row.querySelector('[data-field="role"]').value,active=row.querySelector('[data-field="active"]').value==="true";
+        $("admin-message").textContent="Salvando...";
+        const {error}=await client.rpc("admin_update_profile",{target_id:id,new_role:role,new_active:active,new_full_name:null});
+        $("admin-message").textContent=error?error.message:"Usuário atualizado.";
+        if(!error)loadProfiles();
+      }
+      async function createAuthUser(email,password){
+        const adminClient=window.supabase.createClient(config.url,config.publishableKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:"nk-admin-create-user"}});
+        return adminClient.auth.signUp({email,password});
+      }
+      async function addUser(event){
+        event.preventDefault();
+        const email=$("new-email").value.trim().toLowerCase(),password=$("new-password").value,role=$("new-role").value,active=$("new-active").value==="true";
+        $("admin-message").textContent="Criando usuário...";
+        const signup=await createAuthUser(email,password);
+        if(signup.error){$("admin-message").textContent=signup.error.message;return;}
+        let profile=null;
+        for(let i=0;i<8;i++){
+          const {data}=await client.from("profiles").select("id,email").eq("email",email).maybeSingle();
+          if(data){profile=data;break;}
+          await new Promise(resolve=>setTimeout(resolve,500));
+        }
+        if(!profile){$("admin-message").textContent="Usuário criado no Auth, mas o perfil ainda não apareceu. Atualize a lista em alguns segundos.";loadProfiles();return;}
+        const {error}=await client.rpc("admin_update_profile",{target_id:profile.id,new_role:role,new_active:active,new_full_name:null});
+        $("admin-message").textContent=error?error.message:"Usuário criado e liberado.";
+        if(!error){$("admin-create").reset();loadProfiles();}
+      }
       function openDetails(id){
         const c=collections.find(item=>item.id===id);if(!c)return;
         $("detail-title").textContent=c.collection_code;
@@ -152,6 +230,10 @@
         $("login-message").textContent=error?"E-mail ou senha inválidos.":"";
       });
       $("logout").addEventListener("click",()=>client.auth.signOut());
+      $("tab-collections").addEventListener("click",()=>showPanel("collections"));
+      $("tab-admin").addEventListener("click",()=>showPanel("admin"));
+      $("admin-create").addEventListener("submit",addUser);
+      $("user-rows").addEventListener("click",event=>{const button=event.target.closest("[data-save-user]");if(button)updateProfile(button.closest("tr"))});
       ["search","date-from","date-to","status"].forEach(id=>$(id).addEventListener("input",applyFilters));
       $("export").addEventListener("click",exportCsv);
       $("rows").addEventListener("click",event=>{const button=event.target.closest("[data-id]");if(button)openDetails(button.dataset.id)});

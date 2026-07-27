@@ -12,12 +12,16 @@ end $$;
 
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
-  email text not null,
+  email text not null unique,
   full_name text,
-  role public.nk_user_role not null default 'operator',
-  active boolean not null default true,
+  role public.nk_user_role not null default 'viewer',
+  active boolean not null default false,
   created_at timestamptz not null default now()
 );
+
+alter table public.profiles alter column role set default 'viewer';
+alter table public.profiles alter column active set default false;
+create unique index if not exists profiles_email_key on public.profiles(email);
 
 create table if not exists public.collections (
   id uuid primary key default gen_random_uuid(),
@@ -93,6 +97,45 @@ $$;
 
 grant execute on function public.current_user_role() to authenticated;
 
+create or replace function public.admin_update_profile(
+  target_id uuid,
+  new_role public.nk_user_role,
+  new_active boolean,
+  new_full_name text default null
+)
+returns public.profiles
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  updated_profile public.profiles;
+begin
+  if public.current_user_role() <> 'admin' then
+    raise exception 'Apenas administradores podem alterar perfis.';
+  end if;
+
+  if target_id = (select auth.uid()) and (new_role <> 'admin' or new_active is not true) then
+    raise exception 'Voce nao pode remover seu proprio acesso administrativo.';
+  end if;
+
+  update public.profiles
+    set role = new_role,
+        active = new_active,
+        full_name = coalesce(new_full_name, full_name)
+  where id = target_id
+  returning * into updated_profile;
+
+  if updated_profile.id is null then
+    raise exception 'Perfil nao encontrado.';
+  end if;
+
+  return updated_profile;
+end;
+$$;
+
+grant execute on function public.admin_update_profile(uuid, public.nk_user_role, boolean, text) to authenticated;
+
 alter table public.profiles enable row level security;
 alter table public.collections enable row level security;
 alter table public.scans enable row level security;
@@ -103,10 +146,10 @@ on public.profiles for select to authenticated
 using (id = (select auth.uid()) or public.current_user_role() = 'admin');
 
 drop policy if exists "profiles_admin_update" on public.profiles;
-create policy "profiles_admin_update"
+create policy "profiles_no_direct_update"
 on public.profiles for update to authenticated
-using (public.current_user_role() = 'admin')
-with check (public.current_user_role() = 'admin');
+using (false)
+with check (false);
 
 drop policy if exists "collections_authenticated_select" on public.collections;
 create policy "collections_authenticated_select"
@@ -160,7 +203,7 @@ grant usage on schema public to authenticated;
 grant select on public.profiles, public.collections, public.scans to authenticated;
 grant insert, update on public.collections to authenticated;
 grant insert on public.scans to authenticated;
-grant update on public.profiles to authenticated;
+revoke update on public.profiles from authenticated;
 grant delete on public.collections, public.scans to authenticated;
 
 -- Depois de criar o primeiro usuário no painel Authentication > Users,
