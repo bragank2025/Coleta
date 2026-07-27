@@ -35,7 +35,7 @@
     <form id="login-form" class="login-card">
       <div class="brand"><span class="mark">N</span> NK HUB</div>
       <h1>Consultas de coleta</h1>
-      <p>Acesse o histÃ³rico central de viagens, pedidos e notas fiscais.</p>
+      <p>Acesse o histórico central de viagens, pedidos e notas fiscais.</p>
       <div id="setup-warning" class="setup hidden">O projeto Supabase ainda precisa ser conectado para liberar o acesso.</div>
       <label>E-mail<input id="email" type="email" autocomplete="username" required></label>
       <label>Senha<input id="password" type="password" autocomplete="current-password" required></label>
@@ -46,13 +46,13 @@
 
   <section id="app" class="hidden">
     <header>
-      <div class="brand"><span class="mark">N</span> NK HUB Â· CONSULTAS</div>
+      <div class="brand"><span class="mark">N</span> NK HUB · CONSULTAS</div>
       <nav><span id="user-email" class="user-email"></span><a href="./">Coletor</a><button id="logout">Sair</button></nav>
     </header>
     <main>
       <div class="tabs"><button id="tab-collections" class="active" type="button">Coletas</button><button id="tab-refs" type="button">Venda/NF</button><button id="tab-account" type="button">Conta</button><button id="tab-admin" class="hidden" type="button">Admin</button></div>
       <section id="collections-panel">
-      <div class="title-row"><div><h1>HistÃ³rico de coletas</h1><p class="subtitle">Auditoria centralizada de tudo que foi carregado.</p></div></div>
+      <div class="title-row"><div><h1>Histórico de coletas</h1><p class="subtitle">Auditoria centralizada de tudo que foi carregado.</p></div></div>
       <section class="stats">
         <div class="stat"><b id="stat-collections">0</b><span>coletas</span></div>
         <div class="stat"><b id="stat-orders">0</b><span>pedidos</span></div>
@@ -76,10 +76,10 @@
       <section id="refs-panel" class="hidden">
         <div class="title-row"><div><h1>Base Venda/NF</h1><p class="subtitle">Pesquise a fonte importada da planilha por venda ou nota fiscal.</p></div></div>
         <section class="stats">
-          <div class="stat"><b id="stat-refs-total">0</b><span>vÃ­nculos importados</span></div>
+          <div class="stat"><b id="stat-refs-total">0</b><span>vínculos importados</span></div>
           <div class="stat"><b id="stat-refs-shopee">0</b><span>Shopee</span></div>
           <div class="stat"><b id="stat-refs-mla">0</b><span>ML Autoparts</span></div>
-          <div class="stat"><b id="stat-refs-mlp">0</b><span>ML AutopeÃ§as</span></div>
+          <div class="stat"><b id="stat-refs-mlp">0</b><span>ML Autopeças</span></div>
         </section>
         <section class="ref-search">
           <input id="ref-search" placeholder="Digite a venda ou NF para pesquisar">
@@ -87,11 +87,11 @@
             <option value="">Todos marketplaces</option>
             <option value="SHOPEE">Shopee</option>
             <option value="ML AUTOPARTS">ML Autoparts</option>
-            <option value="ML AUTOPECAS">ML AutopeÃ§as</option>
+            <option value="ML AUTOPECAS">ML Autopeças</option>
           </select>
           <button id="ref-refresh" type="button">Atualizar</button>
         </section>
-        <div class="pager"><button id="ref-prev" type="button">Anterior</button><span id="ref-page">PÃ¡gina 1</span><button id="ref-next" type="button">PrÃ³xima</button></div>
+        <div class="pager"><button id="ref-prev" type="button">Anterior</button><span id="ref-page">Página 1</span><button id="ref-next" type="button">Próxima</button></div>
         <div class="table-wrap">
           <table>
             <thead><tr><th>MARKETPLACE</th><th>VENDA</th><th>NF</th><th>ABA</th><th>IMPORTADO EM</th><th>IMPORTADO POR</th></tr></thead>
@@ -100,21 +100,21 @@
         </div>
       </section>
       <section id="account-panel" class="hidden">
-        <div class="title-row"><div><h1>Minha conta</h1><p class="subtitle">Troca segura de senha do usuÃ¡rio logado.</p></div></div>
+        <div class="title-row"><div><h1>Minha conta</h1><p class="subtitle">Troca segura de senha do usuário logado.</p></div></div>
         <div class="password-card">
-          <p><strong>Trocar senha.</strong> Digite uma nova senha para o seu prÃ³prio usuÃ¡rio. Para outro usuÃ¡rio, um admin deve enviar o link de redefiniÃ§Ã£o.</p>
+          <p><strong>Trocar senha.</strong> Digite uma nova senha para o seu próprio usuário. Para outro usuário, um admin deve enviar o link de redefinição.</p>
           <div class="password-actions">
-            <input id="own-password" type="password" placeholder="Nova senha do meu usuÃ¡rio" autocomplete="new-password">
+            <input id="own-password" type="password" placeholder="Nova senha do meu usuário" autocomplete="new-password">
             <button id="change-own-password" type="button">Trocar minha senha</button>
           </div>
           <p id="password-message" class="message"></p>
         </div>
       </section>
       <section id="admin-panel" class="admin-panel hidden">
-        <div class="title-row"><div><h1>Painel admin</h1><p class="subtitle">Cadastro e permissÃµes de acesso ao coletor.</p></div></div>
-        <p class="admin-note">Novos usuÃ¡rios entram como visualizadores inativos atÃ© um admin liberar. A alteraÃ§Ã£o de permissÃµes Ã© validada no banco, e o admin logado nÃ£o consegue remover o prÃ³prio acesso administrativo. Senhas de terceiros sÃ£o redefinidas por link enviado ao e-mail do usuÃ¡rio.</p>
+        <div class="title-row"><div><h1>Painel admin</h1><p class="subtitle">Cadastro e permissões de acesso ao coletor.</p></div></div>
+        <p class="admin-note">Novos usuários entram como visualizadores inativos até um admin liberar. A alteração de permissões é validada no banco, e o admin logado não consegue remover o próprio acesso administrativo. Senhas de terceiros são redefinidas por link enviado ao e-mail do usuário.</p>
         <div class="import-card">
-          <p><strong>Importar planilha Venda/NF.</strong> O sistema lÃª somente as abas SHOPEE, ML AUTOPARTS e ML AUTOPECAS, usando as colunas VENDA e NF. Registros repetidos nÃ£o duplicam no banco.</p>
+          <p><strong>Importar planilha Venda/NF.</strong> O sistema lê somente as abas SHOPEE, ML AUTOPARTS e ML AUTOPECAS, usando as colunas VENDA e NF. Registros repetidos não duplicam no banco.</p>
           <div class="import-actions">
             <input id="sales-file" type="file" accept=".xlsx,.xlsm,.xls">
             <button id="import-sales" type="button">Importar Venda/NF</button>
@@ -122,8 +122,8 @@
           <p id="import-message" class="message"></p>
         </div>
         <form id="admin-create" class="admin-create">
-          <input id="new-email" type="email" placeholder="E-mail do novo usuÃ¡rio" autocomplete="off" required>
-          <input id="new-password" type="password" placeholder="Senha temporÃ¡ria" autocomplete="new-password" required>
+          <input id="new-email" type="email" placeholder="E-mail do novo usuário" autocomplete="off" required>
+          <input id="new-password" type="password" placeholder="Senha temporária" autocomplete="new-password" required>
           <select id="new-role"><option value="operator">Operador</option><option value="viewer">Consulta</option><option value="admin">Admin</option></select>
           <select id="new-active"><option value="true">Ativo</option><option value="false">Inativo</option></select>
           <button type="submit">Adicionar</button>
@@ -131,7 +131,7 @@
         <p id="admin-message" class="message"></p>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>E-MAIL</th><th>NOME</th><th>PERFIL</th><th>STATUS</th><th>AÃ‡ÃƒO</th></tr></thead>
+            <thead><tr><th>E-MAIL</th><th>NOME</th><th>PERFIL</th><th>STATUS</th><th>AÇÃO</th></tr></thead>
             <tbody id="user-rows"><tr><td class="empty" colspan="5">Carregando...</td></tr></tbody>
           </table>
         </div>
@@ -157,7 +157,7 @@
       let collections=[],filtered=[],profiles=[],refs=[],filteredRefs=[],currentUser=null,currentProfile=null,refsPage=1;
       const refsPageSize=100;
       const escapeHtml=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
-      const formatDate=value=>value?new Date(value).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"}):"â€”";
+      const formatDate=value=>value?new Date(value).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"}):"—";
 
       async function boot(){
         if(!configured){$("setup-warning").classList.remove("hidden");$("login-form").querySelector("button").disabled=true;return;}
@@ -172,7 +172,7 @@
         await loadCurrentProfile();
         if(!currentProfile||!currentProfile.active){
           await client.auth.signOut();
-          $("login-message").textContent="UsuÃ¡rio sem liberaÃ§Ã£o ativa. PeÃ§a para um administrador ativar o acesso.";
+          $("login-message").textContent="Usuário sem liberação ativa. Peça para um administrador ativar o acesso.";
           return;
         }
         await loadCollections();
@@ -269,17 +269,17 @@
         const {data,error}=await client.from("profiles").select("id,email,full_name,role,active,created_at").order("email");
         if(error){$("user-rows").innerHTML=`<tr><td class="empty" colspan="5">${escapeHtml(error.message)}</td></tr>`;return;}
         profiles=data||[];
-        $("user-rows").innerHTML=profiles.length?profiles.map(profileRow).join(""):'<tr><td class="empty" colspan="5">Nenhum usuÃ¡rio encontrado.</td></tr>';
+        $("user-rows").innerHTML=profiles.length?profiles.map(profileRow).join(""):'<tr><td class="empty" colspan="5">Nenhum usuário encontrado.</td></tr>';
       }
       function profileRow(p){
         const self=p.id===currentUser.id;
-        return `<tr data-user-id="${escapeHtml(p.id)}" data-email="${escapeHtml(p.email)}"><td><strong>${escapeHtml(p.email)}</strong></td><td>${escapeHtml(p.full_name||"â€”")}</td><td><select data-field="role" ${self?"disabled":""}><option value="viewer" ${p.role==="viewer"?"selected":""}>Consulta</option><option value="operator" ${p.role==="operator"?"selected":""}>Operador</option><option value="admin" ${p.role==="admin"?"selected":""}>Admin</option></select></td><td><select data-field="active" ${self?"disabled":""}><option value="true" ${p.active?"selected":""}>Ativo</option><option value="false" ${!p.active?"selected":""}>Inativo</option></select></td><td><div class="user-actions"><span>${self?"UsuÃ¡rio atual":""}</span><button data-save-user ${self?"disabled":""}>Salvar</button><button data-reset-password>Reset senha</button></div></td></tr>`;
+        return `<tr data-user-id="${escapeHtml(p.id)}" data-email="${escapeHtml(p.email)}"><td><strong>${escapeHtml(p.email)}</strong></td><td>${escapeHtml(p.full_name||"—")}</td><td><select data-field="role" ${self?"disabled":""}><option value="viewer" ${p.role==="viewer"?"selected":""}>Consulta</option><option value="operator" ${p.role==="operator"?"selected":""}>Operador</option><option value="admin" ${p.role==="admin"?"selected":""}>Admin</option></select></td><td><select data-field="active" ${self?"disabled":""}><option value="true" ${p.active?"selected":""}>Ativo</option><option value="false" ${!p.active?"selected":""}>Inativo</option></select></td><td><div class="user-actions"><span>${self?"Usuário atual":""}</span><button data-save-user ${self?"disabled":""}>Salvar</button><button data-reset-password>Reset senha</button></div></td></tr>`;
       }
       async function updateProfile(row){
         const id=row.dataset.userId,role=row.querySelector('[data-field="role"]').value,active=row.querySelector('[data-field="active"]').value==="true";
         $("admin-message").textContent="Salvando...";
         const {error}=await client.rpc("admin_update_profile",{target_id:id,new_role:role,new_active:active,new_full_name:null});
-        $("admin-message").textContent=error?error.message:"UsuÃ¡rio atualizado.";
+        $("admin-message").textContent=error?error.message:"Usuário atualizado.";
         if(!error)loadProfiles();
       }
       async function changeOwnPassword(){
@@ -292,10 +292,10 @@
       }
       async function sendPasswordReset(row){
         const email=row.dataset.email;
-        $("admin-message").textContent="Enviando link de redefiniÃ§Ã£o...";
+        $("admin-message").textContent="Enviando link de redefinição...";
         const redirectTo=new URL("consulta.html",location.href).href;
         const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo});
-        $("admin-message").textContent=error?error.message:`Link de redefiniÃ§Ã£o enviado para ${email}.`;
+        $("admin-message").textContent=error?error.message:`Link de redefinição enviado para ${email}.`;
       }
       async function createAuthUser(email,password){
         const adminClient=window.supabase.createClient(config.url,config.publishableKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:"nk-admin-create-user"}});
@@ -307,12 +307,12 @@
       async function addUser(event){
         event.preventDefault();
         const email=$("new-email").value.trim().toLowerCase(),password=$("new-password").value,role=$("new-role").value,active=$("new-active").value==="true";
-        $("admin-message").textContent="Criando usuÃ¡rio...";
+        $("admin-message").textContent="Criando usuário...";
         const signup=await createAuthUser(email,password);
         if(signup.error){
-          $("admin-message").textContent="UsuÃ¡rio jÃ¡ existe ou nÃ£o pÃ´de ser criado. Tentando liberar o acesso...";
+          $("admin-message").textContent="Usuário já existe ou não pôde ser criado. Tentando liberar o acesso...";
           const released=await releaseUserByEmail(email,role,active);
-          $("admin-message").textContent=released.error?released.error.message:"UsuÃ¡rio existente liberado/atualizado.";
+          $("admin-message").textContent=released.error?released.error.message:"Usuário existente liberado/atualizado.";
           if(!released.error){$("admin-create").reset();loadProfiles();}
           return;
         }
@@ -325,7 +325,7 @@
         const {error}=profile
           ? await client.rpc("admin_update_profile",{target_id:profile.id,new_role:role,new_active:active,new_full_name:null})
           : await releaseUserByEmail(email,role,active);
-        $("admin-message").textContent=error?error.message:"UsuÃ¡rio criado e liberado.";
+        $("admin-message").textContent=error?error.message:"Usuário criado e liberado.";
         if(!error){$("admin-create").reset();loadProfiles();}
       }
       const normalizeHeader=value=>String(value||"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
@@ -341,7 +341,7 @@
         const header=matrix[0]||[];
         const vendaIndex=header.findIndex(cell=>normalizeHeader(cell)==="VENDA");
         const nfIndex=header.findIndex(cell=>normalizeHeader(cell)==="NF");
-        if(vendaIndex<0||nfIndex<0)throw new Error(`Aba ${sheetName}: colunas VENDA e NF nÃ£o encontradas.`);
+        if(vendaIndex<0||nfIndex<0)throw new Error(`Aba ${sheetName}: colunas VENDA e NF não encontradas.`);
         const seen=new Set(),rows=[];
         for(const row of matrix.slice(1)){
           const venda=normalizeCode(row[vendaIndex]),nf=normalizeCode(row[nfIndex]);
@@ -357,24 +357,24 @@
         if(!(currentProfile&&currentProfile.role==="admin"&&currentProfile.active))return;
         const file=$("sales-file").files&&$("sales-file").files[0];
         if(!file){$("import-message").textContent="Selecione a planilha primeiro.";return;}
-        if(!window.XLSX){$("import-message").textContent="Biblioteca de leitura da planilha nÃ£o carregou. Atualize a pÃ¡gina e tente de novo.";return;}
+        if(!window.XLSX){$("import-message").textContent="Biblioteca de leitura da planilha não carregou. Atualize a página e tente de novo.";return;}
         $("import-message").textContent="Lendo planilha...";
         try{
           const buffer=await file.arrayBuffer();
           const workbook=XLSX.read(buffer,{type:"array"});
           const sheetNames=["SHOPEE","ML AUTOPARTS","ML AUTOPECAS"];
           const rows=sheetNames.flatMap(name=>readSheetRows(workbook,name));
-          if(!rows.length){$("import-message").textContent="Nenhuma venda/NF vÃ¡lida encontrada.";return;}
-          $("import-message").textContent=`Gravando ${rows.length} vÃ­nculos...`;
+          if(!rows.length){$("import-message").textContent="Nenhuma venda/NF válida encontrada.";return;}
+          $("import-message").textContent=`Gravando ${rows.length} vínculos...`;
           let saved=0;
           for(let i=0;i<rows.length;i+=500){
             const chunk=rows.slice(i,i+500);
             const {error}=await client.from("sales_invoice_refs").upsert(chunk,{onConflict:"marketplace,venda,nf"});
             if(error)throw error;
             saved+=chunk.length;
-            $("import-message").textContent=`Gravando ${saved}/${rows.length} vÃ­nculos...`;
+            $("import-message").textContent=`Gravando ${saved}/${rows.length} vínculos...`;
           }
-          $("import-message").textContent=`ImportaÃ§Ã£o concluÃ­da: ${rows.length} vÃ­nculos processados.`;
+          $("import-message").textContent=`Importação concluída: ${rows.length} vínculos processados.`;
           refs=[];filteredRefs=[];
         }catch(error){
           $("import-message").textContent=error.message||String(error);
@@ -400,7 +400,7 @@
       $("login-form").addEventListener("submit",async event=>{
         event.preventDefault();$("login-message").textContent="Entrando...";
         const {error}=await client.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
-        $("login-message").textContent=error?"E-mail ou senha invÃ¡lidos.":"";
+        $("login-message").textContent=error?"E-mail ou senha inválidos.":"";
       });
       $("logout").addEventListener("click",()=>client.auth.signOut());
       $("tab-collections").addEventListener("click",()=>showPanel("collections"));
@@ -430,6 +430,7 @@
   </script>
 </body>
 </html>
+
 
 
 

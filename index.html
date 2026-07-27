@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#183a31">
-  <meta name="description" content="ConferÃªncia mobile de coleta e leitura de cÃ³digos de pedidos e DANFEs.">
-  <title>NK HUB | ConferÃªncia de Coleta</title>
+  <meta name="description" content="Conferência mobile de coleta e leitura de códigos de pedidos e DANFEs.">
+  <title>NK HUB | Conferência de Coleta</title>
   <style>
     :root{--ink:#14211e;--muted:#70817a;--line:#dfe8e2;--cream:#f7f7f2;--lime:#caff43;--dark:#183a31;--danger:#ff423c;--success:#30e56b}
     *{box-sizing:border-box}
@@ -121,7 +121,7 @@
     <form id="auth-form" class="auth-card">
       <div class="brand"><span class="brand-mark">N</span> NK HUB</div>
       <h2>Acesso ao coletor</h2>
-      <p>Entre com seu e-mail e senha para registrar a operaÃ§Ã£o.</p>
+      <p>Entre com seu e-mail e senha para registrar a operação.</p>
       <label>E-mail<input id="auth-email" type="email" autocomplete="username" required></label>
       <label>Senha<input id="auth-password" type="password" autocomplete="current-password" required></label>
       <button class="primary" type="submit">Entrar <span>IR</span></button>
@@ -132,9 +132,9 @@
   <div id="sync-state" class="sync-state hidden">Dados sincronizados</div>
   <main id="onboarding" class="shell onboarding">
     <div class="brand"><span class="brand-mark">N</span> NK HUB</div>
-    <div class="eyebrow">EXPEDIÃ‡ÃƒO</div>
-    <h1>ConferÃªncia de coleta,<br><em>sem ponto cego.</em></h1>
-    <p class="lead">Registre o pedido mesmo quando a chave da NF nÃ£o estiver legÃ­vel.</p>
+    <div class="eyebrow">EXPEDIÇÃO</div>
+    <h1>Conferência de coleta,<br><em>sem ponto cego.</em></h1>
+    <p class="lead">Registre o pedido mesmo quando a chave da NF não estiver legível.</p>
     <section class="setup-card">
       <div class="section-title">
         <span>01</span>
@@ -142,7 +142,7 @@
       </div>
       <form id="start-form">
         <label>Transportadora<input id="carrier" required value="Rodonaves" autocomplete="organization"></label>
-        <label>Placa do caminhÃ£o<input id="plate" required value="FPV-1234" autocomplete="off"></label>
+        <label>Placa do caminhão<input id="plate" required value="FPV-1234" autocomplete="off"></label>
         <label>Motorista<input id="driver" required value="Geraldo" autocomplete="name"></label>
         <label>Ajudante (opcional)<input id="helper" autocomplete="name"></label>
         <button class="primary" type="submit">Iniciar coleta <span>IR</span></button>
@@ -162,18 +162,18 @@
     <section class="stats">
       <div><b id="pedido-count">0</b><span>pedidos</span></div>
       <div><b id="nf-count">0</b><span>notas</span></div>
-      <div><b>0</b><span>pendÃªncias</span></div>
+      <div><b>0</b><span>pendências</span></div>
     </section>
     <section class="scan-area">
       <div class="scan-visual"><div class="scan-corners"></div><span class="scan-icon">|||</span></div>
       <h2>Pronto para bipar</h2>
-      <p>Leia o pedido. Se a chave da NF tambÃ©m ler, ela fica vinculada automaticamente.</p>
+      <p>Leia o pedido. Se a chave da NF também ler, ela fica vinculada automaticamente.</p>
       <button id="open-scanner" class="primary">Abrir leitor <span>SCAN</span></button>
     </section>
     <section class="external-reader">
-      <div class="external-head"><i></i><div><strong>Leitor adicional</strong><small>CompatÃ­vel com leitores Bluetooth ou USB em modo teclado</small></div></div>
+      <div class="external-head"><i></i><div><strong>Leitor adicional</strong><small>Compatível com leitores Bluetooth ou USB em modo teclado</small></div></div>
       <form id="external-form" class="external-form">
-        <input id="external-code" inputmode="none" autocomplete="off" placeholder="Toque aqui e bipe no leitor fÃ­sico">
+        <input id="external-code" inputmode="none" autocomplete="off" placeholder="Toque aqui e bipe no leitor físico">
         <button type="submit">Registrar</button>
       </form>
     </section>
@@ -196,25 +196,25 @@
       <div id="ios-reader" class="ios-reader hidden"></div>
       <div id="guide-box" class="guide-box"></div>
       <div id="detected-box" class="detected-box hidden"></div>
-      <div class="scanner-hint"><i id="hint-dot"></i><span id="hint">Aponte para o cÃ³digo de barras</span></div>
+      <div class="scanner-hint"><i id="hint-dot"></i><span id="hint">Aponte para o código de barras</span></div>
     </div>
     <div class="zoom-row">
       <span>Zoom</span>
-      <input id="zoom" aria-label="Zoom da cÃ¢mera" type="range" min="1" max="2" step="0.1" value="1">
+      <input id="zoom" aria-label="Zoom da câmera" type="range" min="1" max="2" step="0.1" value="1">
       <b id="zoom-value">1.0x</b>
     </div>
-    <div id="read-results" class="read-results"><p>Buscando cÃ³digo de barras...</p></div>
+    <div id="read-results" class="read-results"><p>Buscando código de barras...</p></div>
     <form id="manual-form" class="manual">
-      <input id="manual-code" inputmode="numeric" autocomplete="off" placeholder="Digite o pedido se necessÃ¡rio">
+      <input id="manual-code" inputmode="numeric" autocomplete="off" placeholder="Digite o pedido se necessário">
       <button type="submit">Ler</button>
     </form>
-    <div id="save-readings" class="save-readings">Leitura automÃ¡tica ativa <span>PRONTO</span></div>
+    <div id="save-readings" class="save-readings">Leitura automática ativa <span>PRONTO</span></div>
   </section>
   <div id="toast" class="toast hidden" role="status"></div>
   <section id="signature-modal" class="signature-modal hidden">
     <div class="signature-card">
       <h2>Assinatura do motorista</h2>
-      <p>PeÃ§a para o motorista assinar para salvar o comprovante da conferÃªncia.</p>
+      <p>Peça para o motorista assinar para salvar o comprovante da conferência.</p>
       <label>Nome de quem assinou<input id="signature-name" autocomplete="name" placeholder="Nome do motorista"></label>
       <canvas id="signature-pad" width="900" height="320"></canvas>
       <div class="signature-actions">
@@ -270,7 +270,7 @@
         if(!active)return;
         $("collection-id").textContent=state.collection.id;
         $("collection-carrier").textContent=state.collection.carrier;
-        $("collection-trip").textContent=state.collection.plate+" Â· "+state.collection.driver;
+        $("collection-trip").textContent=state.collection.plate+" · "+state.collection.driver;
         const pedidos=state.scans.filter(s=>s.type==="Pedido").length;
         const nfs=state.scans.filter(s=>s.type==="NF").length;
         $("pedido-count").textContent=pedidos; $("nf-count").textContent=nfs;
@@ -283,7 +283,7 @@
         return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
       }
       function scanMeta(scan){
-        return scan&&scan.marketplace ? `${scan.marketplace} Â· Venda ${scan.venda||scan.value} Â· NF ${scan.nf||"â€”"} Â· ` : "";
+        return scan&&scan.marketplace ? `${scan.marketplace} · Venda ${scan.venda||scan.value} · NF ${scan.nf||"—"} · ` : "";
       }
       async function enrichRecord(record){
         if(record.type!=="Pedido"||!window.NKData||!NKData.lookupSaleRef)return record;
@@ -296,11 +296,11 @@
         $("guide-box").classList.toggle("success",success);
         $("detected-box").classList.toggle("success",success);
         $("hint-dot").classList.toggle("green",success);
-        $("hint").textContent=success?"CÃ³digo gravado":"Aponte para o prÃ³ximo cÃ³digo";
+        $("hint").textContent=success?"Código gravado":"Aponte para o próximo código";
         $("read-results").innerHTML=success ? state.found.map(s=>
           `<div class="read-result"><small>${escapeHtml(s.type)} gravado automaticamente</small><strong>${escapeHtml(s.value)}</strong><span>OK</span></div>`
-        ).join("") : "<p>Leitor ativo â€” pronto para o prÃ³ximo cÃ³digo.</p>";
-        $("save-readings").innerHTML=success ? "Registrado automaticamente <span>OK</span>" : "Leitura automÃ¡tica ativa <span>PRONTO</span>";
+        ).join("") : "<p>Leitor ativo — pronto para o próximo código.</p>";
+        $("save-readings").innerHTML=success ? "Registrado automaticamente <span>OK</span>" : "Leitura automática ativa <span>PRONTO</span>";
       }
       function temporaryHint(message,duration=900){
         clearTimeout(state.feedbackTimer);
@@ -310,19 +310,19 @@
         $("hint").textContent=message;
         state.feedbackTimer=setTimeout(()=>{ if(!state.scanLocked&&!state.found.length)renderFound(); },duration);
       }
-      function register(value,manual=false,source="CÃ¢mera"){
+      function register(value,manual=false,source="Câmera"){
         const valueClean=normalizeCode(value);
         if(!isValidCode(valueClean)){
-          if(manual)showToast("Informe um pedido de 16 dÃ­gitos ou uma chave de NF-e de 44 dÃ­gitos.");
+          if(manual)showToast("Informe um pedido de 16 dígitos ou uma chave de NF-e de 44 dígitos.");
           return false;
         }
         if(state.scans.some(s=>s.value===valueClean)){
           const stamp=Date.now();
           if(state.lastDuplicate!==valueClean||stamp-state.lastDuplicateAt>1800){
             state.lastDuplicate=valueClean; state.lastDuplicateAt=stamp;
-            showToast("CÃ³digo jÃ¡ lido: "+valueClean,1400);
+            showToast("Código já lido: "+valueClean,1400);
           }
-          temporaryHint("Este cÃ³digo jÃ¡ foi lido",1100);
+          temporaryHint("Este código já foi lido",1100);
           return false;
         }
         const record={value:valueClean,type:classify(valueClean),time:now(),source};
@@ -363,7 +363,7 @@
           }
           return false;
         }
-        return register(valueClean,false,"CÃ¢mera");
+        return register(valueClean,false,"Câmera");
       }
       async function constraint(key,value){
         const fallbackVideo=$("ios-reader").querySelector("video");
@@ -371,7 +371,7 @@
         const track=activeStream&&activeStream.getVideoTracks()[0];
         if(!track)return;
         try{ await track.applyConstraints({advanced:[{[key]:value}]}); }
-        catch{ if(key==="torch")showToast("O flash nÃ£o estÃ¡ disponÃ­vel nesta cÃ¢mera."); }
+        catch{ if(key==="torch")showToast("O flash não está disponível nesta câmera."); }
       }
       async function setZoom(value){
         state.zoom=Number(value); $("zoom").value=state.zoom; $("zoom-value").textContent=state.zoom.toFixed(1)+"x";
@@ -461,10 +461,10 @@
             state.detector=new BarcodeDetector({formats:detectorFormats});
             state.timer=setInterval(scanFrame,180);
           }else{
-            showToast("O leitor nÃ£o carregou. Atualize a pÃ¡gina e tente novamente.");
+            showToast("O leitor não carregou. Atualize a página e tente novamente.");
           }
         }catch{
-          showToast("NÃ£o foi possÃ­vel acessar a cÃ¢mera. Libere a permissÃ£o e tente novamente.");
+          showToast("Não foi possível acessar a câmera. Libere a permissão e tente novamente.");
         }
       }
       function closeScanner(){
@@ -499,7 +499,7 @@
       });
       $("zoom").addEventListener("input",event=>setZoom(event.target.value));
       $("manual-form").addEventListener("submit",event=>{
-        event.preventDefault(); if(register($("manual-code").value,true,"DigitaÃ§Ã£o manual"))$("manual-code").value="";
+        event.preventDefault(); if(register($("manual-code").value,true,"Digitação manual"))$("manual-code").value="";
       });
       function submitExternalCode(){
         clearTimeout(submitExternalCode.timer);
@@ -593,7 +593,7 @@
       $("auth-form").addEventListener("submit",async event=>{
         event.preventDefault();$("auth-message").textContent="Entrando...";
         const result=await NKData.signIn($("auth-email").value.trim(),$("auth-password").value);
-        if(result.error){$("auth-message").textContent=result.error.message||"E-mail ou senha invÃ¡lidos.";return;}
+        if(result.error){$("auth-message").textContent=result.error.message||"E-mail ou senha inválidos.";return;}
         $("auth-message").textContent="";$("auth-gate").classList.add("hidden");$("account-bar").classList.remove("hidden");
         loadState();render();
       });
@@ -602,18 +602,19 @@
       });
       window.addEventListener("nk-sync",event=>{
         const detail=event.detail||{},el=$("sync-state");
-        el.textContent=detail.status==="queued" ? `${detail.pending} registro(s) aguardando internet` : detail.status==="duplicate" ? "CÃ³digo jÃ¡ existente no banco" : "Dados sincronizados";
+        el.textContent=detail.status==="queued" ? `${detail.pending} registro(s) aguardando internet` : detail.status==="duplicate" ? "Código já existente no banco" : "Dados sincronizados";
         el.classList.remove("hidden");clearTimeout(el.timer);el.timer=setTimeout(()=>el.classList.add("hidden"),2600);
       });
       (async()=>{
         const auth=await NKData.init();
         if(auth.configured){
           if(auth.user){$("account-bar").classList.remove("hidden");loadState();render();}
-          else {$("auth-gate").classList.remove("hidden");if(auth.inactive)$("auth-message").textContent="UsuÃ¡rio sem liberaÃ§Ã£o ativa. PeÃ§a para um administrador ativar o acesso.";}
+          else {$("auth-gate").classList.remove("hidden");if(auth.inactive)$("auth-message").textContent="Usuário sem liberação ativa. Peça para um administrador ativar o acesso.";}
         }else{loadState();render();}
       })();
     })();
   </script>
 </body>
 </html>
+
 
