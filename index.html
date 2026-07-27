@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#183a31">
+  <meta name="description" content="Conferência mobile de coleta e leitura de códigos de pedidos e DANFEs.">
+  <title>NK HUB | Conferência de Coleta</title>
+  <style>
+    :root{--ink:#14211e;--muted:#70817a;--line:#dfe8e2;--cream:#f7f7f2;--lime:#caff43;--dark:#183a31;--danger:#ff423c;--success:#30e56b}
+    *{box-sizing:border-box}
+    html{background:#e8ece8}
+    body{margin:0;background:#e8ece8;color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+    button,input{font:inherit}
+    button{cursor:pointer}
+    .shell{width:100%;max-width:540px;min-height:100vh;margin:auto;padding:24px 20px calc(108px + env(safe-area-inset-bottom));background:var(--cream)}
+    header,.collection-head,.list-head{display:flex;align-items:center;justify-content:space-between;gap:14px}
+    .brand{font-size:15px;font-weight:800;letter-spacing:.04em;display:flex;align-items:center;gap:8px}
+    .brand-mark{background:var(--lime);width:25px;height:25px;border-radius:8px;display:grid;place-items:center;color:var(--dark)}
+    .status{color:#267153;font-size:12px;font-weight:700;background:#e0f1e5;border-radius:30px;padding:7px 10px}
+    .status i{display:inline-block;width:7px;height:7px;background:#2b9b69;border-radius:50%;margin-right:5px}
+    .eyebrow{color:#71847c;font-weight:800;font-size:11px;letter-spacing:.12em;margin-top:38px}
+    h1{font-size:36px;letter-spacing:-.06em;line-height:1.02;margin:8px 0}
+    h1 em{color:#39764d;font-style:normal}
+    p{margin:0;color:var(--muted);line-height:1.45}
+    .hidden{display:none!important}
+    .collection-head{margin-top:28px;align-items:end}
+    .collection-head .eyebrow{margin:0}
+    .collection-head h1{font-size:31px}
+    .text-button{border:0;background:none;color:#be3a35;font-weight:700;padding:8px 0}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin:28px 0}
+    .stats div{background:#fff;padding:14px 12px}
+    .stats b{display:block;font-size:24px}
+    .stats span{font-size:11px;color:var(--muted)}
+    .scan-area{background:var(--dark);color:#fff;border-radius:24px;padding:22px;text-align:center}
+    .scan-visual{height:138px;border:1px dashed #6e9185;border-radius:16px;display:grid;place-items:center;margin-bottom:17px;position:relative;background:linear-gradient(135deg,#214c40,#183a31)}
+    .scan-corners{position:absolute;inset:18px;border:3px solid var(--lime);clip-path:polygon(0 0,22% 0,22% 9%,78% 9%,78% 0,100% 0,100% 100%,78% 100%,78% 91%,22% 91%,22% 100%,0 100%)}
+    .scan-icon{color:var(--lime);font-size:55px;transform:rotate(90deg)}
+    .scan-area h2{margin:0 0 6px;font-size:20px}
+    .scan-area p{color:#bbcec5;font-size:13px}
+    .primary{margin-top:20px;border:0;background:var(--lime);color:#17372e;font-weight:800;border-radius:12px;padding:15px 17px;width:100%;display:flex;justify-content:space-between}
+    .list-head{margin:30px 0 12px;align-items:end}
+    .list-head h2{font-size:18px;margin:0 0 4px}
+    .list-head p,.list-head>span{font-size:12px}
+    .scan-list{display:grid;gap:8px}
+    .scan-list article{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px}
+    .check{background:#dff5d7;color:#30834e;border-radius:50%;width:28px;height:28px;display:grid;place-items:center;font-size:11px;font-weight:bold;flex:0 0 auto}
+    .scan-list article>div{flex:1;min-width:0}
+    .scan-list strong,.scan-list small{display:block}
+    .scan-list strong{font-size:13px;overflow-wrap:anywhere}
+    .scan-list small{font-size:11px;color:var(--muted);margin-top:3px}
+    .finish{position:fixed;z-index:3;bottom:calc(18px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);max-width:500px;width:calc(100% - 40px);border:0;background:#142b24;color:#fff;padding:17px 18px;border-radius:14px;font-weight:800;display:flex;justify-content:space-between;box-shadow:0 8px 25px #183a3140}
+    .onboarding{padding-top:34px}
+    .onboarding h1{margin-top:34px;font-size:42px}
+    .lead{font-size:16px;max-width:370px}
+    .setup-card{margin-top:32px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:20px}
+    .section-title{display:flex;gap:12px;align-items:center;margin-bottom:20px}
+    .section-title>span{color:#427e57;background:#e5f4e2;border-radius:8px;padding:8px;font-size:12px;font-weight:800}
+    .section-title strong,.section-title small{display:block}
+    .section-title small{color:var(--muted);font-size:12px;margin-top:3px}
+    label{display:block;font-size:12px;font-weight:700;margin-top:13px}
+    input{width:100%;border:1px solid #d6e1da;border-radius:10px;padding:13px 12px;margin-top:6px;outline-color:#81ad54;background:#fcfdfb}
+    .scanner{position:fixed;z-index:8;inset:0;max-width:540px;margin:auto;background:#080d0b;color:#fff;padding:calc(18px + env(safe-area-inset-top)) 16px calc(20px + env(safe-area-inset-bottom));overflow:auto}
+    .scanner-top{height:44px;display:grid;grid-template-columns:44px 1fr 44px;align-items:center;text-align:center}
+    .scanner-top button{width:38px;height:38px;border:0;border-radius:12px;background:#1a211f;color:#fff;font-size:21px;line-height:1}
+    .scanner-top .flash.on{background:var(--lime);color:#10271f}
+    .video-wrap{margin-top:16px;position:relative;aspect-ratio:3/4;border-radius:18px;overflow:hidden;background:#18221e}
+    .video-wrap video{width:100%;height:100%;object-fit:cover}
+    .guide-box{position:absolute;left:9%;right:9%;top:38%;height:24%;border:2px solid var(--danger);border-radius:8px;box-shadow:0 0 0 999px #0003;transition:.18s}
+    .guide-box.success{border-color:var(--success);box-shadow:0 0 18px #30e56b,0 0 0 999px #0003}
+    .detected-box{position:absolute;border:3px solid var(--danger);transition:all .14s ease;min-height:10px}
+    .detected-box.success{border-color:var(--success);box-shadow:0 0 18px #30e56b}
+    .scanner-hint{position:absolute;bottom:14px;left:14px;right:14px;border-radius:13px;background:#111916e8;padding:14px;font-size:13px;font-weight:700;text-align:center}
+    .scanner-hint i{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--danger);margin-right:7px}
+    .scanner-hint i.green{background:var(--success)}
+    .zoom-row{display:grid;grid-template-columns:42px 1fr 42px;align-items:center;gap:10px;margin:14px 2px;color:#c5d0ca;font-size:12px}
+    .zoom-row input{margin:0;padding:0;accent-color:var(--lime)}
+    .zoom-row b{color:#fff;text-align:right}
+    .read-results{min-height:72px;border-radius:15px;background:#151e1a;padding:10px;margin-top:4px}
+    .read-results p{color:#8d9d96;font-size:13px;text-align:center;padding:9px}
+    .read-result{position:relative;padding:5px 34px 8px 3px;border-bottom:1px solid #29342e}
+    .read-result:last-child{border:0}
+    .read-result small,.read-result strong{display:block}
+    .read-result small{color:#cbd5cf;font-size:11px}
+    .read-result strong{color:#42ec78;font-size:12px;overflow-wrap:anywhere}
+    .read-result span{position:absolute;right:4px;top:16px;color:#42ec78;font-size:14px;font-weight:800}
+    .manual{display:flex;gap:8px;margin-top:11px}
+    .manual input{margin:0;background:#fff}
+    .manual button{border:0;background:#34463f;color:#fff;border-radius:10px;padding:0 15px;font-weight:800}
+    .save-readings{width:100%;border:0;border-radius:13px;background:var(--lime);color:#16372b;font-weight:800;padding:16px;margin-top:12px;display:flex;justify-content:space-between}
+    .empty{color:var(--muted);font-size:13px;justify-content:center}
+    .toast{position:fixed;z-index:10;top:calc(20px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:calc(100% - 40px);max-width:460px;background:#173c31;color:white;padding:13px 16px;border-radius:12px;font-size:13px;box-shadow:0 8px 25px #0003}
+    @media(min-width:700px){.shell{box-shadow:0 0 45px #183a3118}}
+  </style>
+</head>
+<body>
+  <main id="onboarding" class="shell onboarding">
+    <div class="brand"><span class="brand-mark">N</span> NK HUB</div>
+    <div class="eyebrow">EXPEDIÇÃO</div>
+    <h1>Conferência de coleta,<br><em>sem ponto cego.</em></h1>
+    <p class="lead">Registre o pedido mesmo quando a chave da NF não estiver legível.</p>
+    <section class="setup-card">
+      <div class="section-title">
+        <span>01</span>
+        <div><strong>Iniciar coleta</strong><small>Identifique a viagem antes de carregar</small></div>
+      </div>
+      <form id="start-form">
+        <label>Transportadora<input id="carrier" required value="Rodonaves" autocomplete="organization"></label>
+        <label>Placa do caminhão<input id="plate" required value="FPV-1234" autocomplete="off"></label>
+        <label>Motorista<input id="driver" required value="Geraldo" autocomplete="name"></label>
+        <label>Ajudante (opcional)<input id="helper" autocomplete="name"></label>
+        <button class="primary" type="submit">Iniciar coleta <span>IR</span></button>
+      </form>
+    </section>
+  </main>
+
+  <main id="collection" class="shell hidden">
+    <header>
+      <div class="brand"><span class="brand-mark">N</span> NK HUB</div>
+      <span class="status"><i></i> Coleta em andamento</span>
+    </header>
+    <section class="collection-head">
+      <div><div class="eyebrow" id="collection-id">COLETA</div><h1 id="collection-carrier"></h1><p id="collection-trip"></p></div>
+      <button id="exit" class="text-button">Sair</button>
+    </section>
+    <section class="stats">
+      <div><b id="pedido-count">0</b><span>pedidos</span></div>
+      <div><b id="nf-count">0</b><span>notas</span></div>
+      <div><b>0</b><span>pendências</span></div>
+    </section>
+    <section class="scan-area">
+      <div class="scan-visual"><div class="scan-corners"></div><span class="scan-icon">|||</span></div>
+      <h2>Pronto para bipar</h2>
+      <p>Leia o pedido. Se a chave da NF também ler, ela fica vinculada automaticamente.</p>
+      <button id="open-scanner" class="primary">Abrir leitor <span>SCAN</span></button>
+    </section>
+    <section class="list-head">
+      <div><h2>Registros da coleta</h2><p>Pedido e NF ficam vinculados a esta viagem</p></div>
+      <span id="item-count">0 itens</span>
+    </section>
+    <section id="scan-list" class="scan-list"></section>
+    <button id="finish" class="finish">Finalizar coleta <span>OK</span></button>
+  </main>
+
+  <section id="scanner" class="scanner hidden" aria-modal="true" role="dialog" aria-label="Escanear DANFE">
+    <div class="scanner-top">
+      <button id="flash" aria-label="Ligar ou desligar flash">F</button>
+      <strong>Escanear DANFE</strong>
+      <button id="close-scanner" aria-label="Fechar scanner">×</button>
+    </div>
+    <div class="video-wrap">
+      <video id="camera" autoplay playsinline muted></video>
+      <div id="guide-box" class="guide-box"></div>
+      <div id="detected-box" class="detected-box hidden"></div>
+      <div class="scanner-hint"><i id="hint-dot"></i><span id="hint">Aponte para o código de barras</span></div>
+    </div>
+    <div class="zoom-row">
+      <span>Zoom</span>
+      <input id="zoom" aria-label="Zoom da câmera" type="range" min="1" max="2" step="0.1" value="1">
+      <b id="zoom-value">1.0x</b>
+    </div>
+    <div id="read-results" class="read-results"><p>Buscando código de barras...</p></div>
+    <form id="manual-form" class="manual">
+      <input id="manual-code" inputmode="numeric" autocomplete="off" placeholder="Digite o pedido se necessário">
+      <button type="submit">Ler</button>
+    </form>
+    <button id="save-readings" class="save-readings">Gravar 0 código(s) <span>OK</span></button>
+  </section>
+  <div id="toast" class="toast hidden" role="status"></div>
+
+  <script>
+    (() => {
+      "use strict";
+      const STORAGE_KEY = "nk-hub-coleta-v1";
+      const detectorFormats = ["code_128","code_39","code_93","codabar","ean_13","ean_8","itf","qr_code"];
+      const $ = (id) => document.getElementById(id);
+      const state = { collection:null, scans:[], found:[], stream:null, detector:null, timer:null, reading:false, zoom:1, zoomMin:1, zoomMax:2, autoZoomed:false, flash:false };
+
+      function clean(value){ return String(value || "").trim(); }
+      function classify(value){ return value.replace(/\D/g,"").length >= 40 ? "NF" : "Pedido"; }
+      function now(){ return new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}); }
+      function collectionId(){ return "COLETA #" + new Date().toISOString().slice(2,10).replaceAll("-","") + "-" + String(Date.now()).slice(-4); }
+      function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify({collection:state.collection, scans:state.scans})); }
+      function loadState(){
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+          if(saved && saved.collection){ state.collection=saved.collection; state.scans=Array.isArray(saved.scans)?saved.scans:[]; }
+        } catch {}
+      }
+      function showToast(message){
+        $("toast").textContent=message; $("toast").classList.remove("hidden");
+        clearTimeout(showToast.timer); showToast.timer=setTimeout(()=>$("toast").classList.add("hidden"),3200);
+      }
+      function beep(){
+        try{
+          const Ctx=window.AudioContext||window.webkitAudioContext;
+          if(!Ctx)return;
+          const ctx=new Ctx(),osc=ctx.createOscillator(),gain=ctx.createGain();
+          osc.frequency.value=1040; gain.gain.setValueAtTime(.08,ctx.currentTime);
+          osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime+.09);
+        }catch{}
+      }
+      function render(){
+        const active=!!state.collection;
+        $("onboarding").classList.toggle("hidden",active);
+        $("collection").classList.toggle("hidden",!active);
+        if(!active)return;
+        $("collection-id").textContent=state.collection.id;
+        $("collection-carrier").textContent=state.collection.carrier;
+        $("collection-trip").textContent=state.collection.plate+" · "+state.collection.driver;
+        const pedidos=state.scans.filter(s=>s.type==="Pedido").length;
+        const nfs=state.scans.filter(s=>s.type==="NF").length;
+        $("pedido-count").textContent=pedidos; $("nf-count").textContent=nfs;
+        $("item-count").textContent=state.scans.length+" "+(state.scans.length===1?"item":"itens");
+        $("scan-list").innerHTML=state.scans.length ? state.scans.map(s=>
+          `<article><span class="check">OK</span><div><strong>${escapeHtml(s.type)}: ${escapeHtml(s.value)}</strong><small>Registrado às ${escapeHtml(s.time)}</small></div></article>`
+        ).join("") : '<article class="empty">Nenhum pedido registrado ainda.</article>';
+      }
+      function escapeHtml(value){
+        return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+      }
+      function renderFound(){
+        const success=state.found.length>0;
+        $("guide-box").classList.toggle("success",success);
+        $("hint-dot").classList.toggle("green",success);
+        $("hint").textContent=success?"Código identificado":"Aponte para o código de barras";
+        $("read-results").innerHTML=success ? state.found.map((s,i)=>
+          `<div class="read-result"><small>Código ${i+1} (${escapeHtml(s.type)})</small><strong>${escapeHtml(s.value)}</strong><span>OK</span></div>`
+        ).join("") : "<p>Buscando código de barras...</p>";
+        $("save-readings").innerHTML=`Gravar ${state.found.length} código(s) <span>OK</span>`;
+      }
+      function register(value){
+        const valueClean=clean(value);
+        if(!valueClean || state.found.length>=2 || state.found.some(s=>s.value===valueClean) || state.scans.some(s=>s.value===valueClean))return false;
+        state.found.push({value:valueClean,type:classify(valueClean),time:now()});
+        beep(); renderFound(); return true;
+      }
+      async function constraint(key,value){
+        const track=state.stream&&state.stream.getVideoTracks()[0];
+        if(!track)return;
+        try{ await track.applyConstraints({advanced:[{[key]:value}]}); }
+        catch{ if(key==="torch")showToast("O flash não está disponível nesta câmera."); }
+      }
+      async function setZoom(value){
+        state.zoom=Number(value); $("zoom").value=state.zoom; $("zoom-value").textContent=state.zoom.toFixed(1)+"x";
+        await constraint("zoom",state.zoom);
+      }
+      function showBox(result){
+        const box=result.boundingBox,video=$("camera");
+        if(!box||!video.videoWidth)return;
+        const el=$("detected-box");
+        el.style.left=(box.x/video.videoWidth*100)+"%";
+        el.style.top=(box.y/video.videoHeight*100)+"%";
+        el.style.width=(box.width/video.videoWidth*100)+"%";
+        el.style.height=(box.height/video.videoHeight*100)+"%";
+        el.classList.remove("hidden"); el.classList.toggle("success",state.found.length>0);
+      }
+      async function scanFrame(){
+        if(state.reading||!state.detector||state.found.length>=2)return;
+        state.reading=true;
+        try{
+          const results=(await state.detector.detect($("camera"))).slice(0,2);
+          if(results[0]){
+            showBox(results[0]);
+            if(!state.autoZoomed && state.zoomMax>1){
+              state.autoZoomed=true;
+              await setZoom(Math.min(Math.max(1.7,state.zoomMin),Math.min(state.zoomMax,2)));
+            }
+          }
+          results.forEach(r=>r.rawValue&&register(r.rawValue));
+        }catch{}finally{state.reading=false}
+      }
+      async function openScanner(){
+        state.found=[]; state.autoZoomed=false; state.flash=false;
+        $("flash").classList.remove("on"); $("detected-box").classList.add("hidden");
+        renderFound(); $("scanner").classList.remove("hidden");
+        try{
+          state.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1920},height:{ideal:1080}},audio:false});
+          $("camera").srcObject=state.stream; await $("camera").play();
+          const track=state.stream.getVideoTracks()[0],caps=track.getCapabilities?track.getCapabilities():{};
+          if(caps.zoom){
+            state.zoomMin=Math.max(1,caps.zoom.min); state.zoomMax=Math.min(caps.zoom.max,3);
+            $("zoom").min=state.zoomMin; $("zoom").max=state.zoomMax; await setZoom(state.zoomMin);
+          }else{
+            state.zoomMin=1; state.zoomMax=2; $("zoom").min=1; $("zoom").max=2; $("zoom").value=1;
+          }
+          await constraint("focusMode","continuous");
+          if("BarcodeDetector" in window){
+            state.detector=new BarcodeDetector({formats:detectorFormats});
+            state.timer=setInterval(scanFrame,180);
+          }else{
+            showToast("Leitura automática indisponível neste navegador. Digite o pedido no campo abaixo.");
+          }
+        }catch{
+          showToast("Não foi possível acessar a câmera. Libere a permissão e tente novamente.");
+        }
+      }
+      function closeScanner(){
+        if(state.timer)clearInterval(state.timer);
+        state.timer=null; state.detector=null; state.reading=false;
+        if(state.stream)state.stream.getTracks().forEach(t=>t.stop());
+        state.stream=null; $("camera").srcObject=null; $("scanner").classList.add("hidden");
+      }
+
+      $("start-form").addEventListener("submit",event=>{
+        event.preventDefault();
+        state.collection={id:collectionId(),carrier:clean($("carrier").value),plate:clean($("plate").value).toUpperCase(),driver:clean($("driver").value),helper:clean($("helper").value),startedAt:new Date().toISOString()};
+        state.scans=[]; saveState(); render();
+      });
+      $("exit").addEventListener("click",()=>{ closeScanner(); state.collection=null; state.scans=[]; localStorage.removeItem(STORAGE_KEY); render(); });
+      $("open-scanner").addEventListener("click",openScanner);
+      $("close-scanner").addEventListener("click",closeScanner);
+      $("flash").addEventListener("click",async()=>{
+        state.flash=!state.flash; $("flash").classList.toggle("on",state.flash); await constraint("torch",state.flash);
+      });
+      $("zoom").addEventListener("input",event=>setZoom(event.target.value));
+      $("manual-form").addEventListener("submit",event=>{
+        event.preventDefault(); if(register($("manual-code").value))$("manual-code").value="";
+      });
+      $("save-readings").addEventListener("click",()=>{
+        if(!state.found.length){showToast("Nenhum código foi lido ainda.");return;}
+        const total=state.found.length;
+        state.scans=[...state.found,...state.scans]; saveState(); render(); closeScanner();
+        showToast(total+" código(s) gravado(s) na coleta.");
+      });
+      $("finish").addEventListener("click",()=>{
+        closeScanner(); if(state.collection){state.collection.finishedAt=new Date().toISOString();saveState();}
+        showToast("Coleta finalizada com "+state.scans.length+" registro(s).");
+      });
+      window.addEventListener("pagehide",()=>{ if(state.stream)state.stream.getTracks().forEach(t=>t.stop()); });
+      loadState(); render();
+    })();
+  </script>
+</body>
+</html>
