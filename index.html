@@ -66,6 +66,10 @@
     .scanner-top .flash.on{background:var(--lime);color:#10271f}
     .video-wrap{margin-top:16px;position:relative;aspect-ratio:3/4;border-radius:18px;overflow:hidden;background:#18221e}
     .video-wrap video{width:100%;height:100%;object-fit:cover}
+    .ios-reader{position:absolute;inset:0;overflow:hidden;background:#18221e}
+    .ios-reader>div{width:100%!important;height:100%!important;border:0!important}
+    .ios-reader video{width:100%!important;height:100%!important;object-fit:cover!important}
+    .ios-reader canvas{display:none!important}
     .guide-box{position:absolute;left:9%;right:9%;top:38%;height:24%;border:2px solid var(--danger);border-radius:8px;box-shadow:0 0 0 999px #0003;transition:.18s}
     .guide-box.success{border-color:var(--success);box-shadow:0 0 18px #30e56b,0 0 0 999px #0003}
     .detected-box{position:absolute;border:3px solid var(--danger);transition:all .14s ease;min-height:10px}
@@ -150,6 +154,7 @@
     </div>
     <div class="video-wrap">
       <video id="camera" autoplay playsinline muted></video>
+      <div id="ios-reader" class="ios-reader hidden"></div>
       <div id="guide-box" class="guide-box"></div>
       <div id="detected-box" class="detected-box hidden"></div>
       <div class="scanner-hint"><i id="hint-dot"></i><span id="hint">Aponte para o código de barras</span></div>
@@ -168,15 +173,17 @@
   </section>
   <div id="toast" class="toast hidden" role="status"></div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js" integrity="sha512-r6rDA7W6ZeQhvl8S7yRVQUKVHdexq+GAlNkNNqVC7YyIV+NwqCTJe2hDWCiffTyRNOeGEzRRJ9ifvRm/HCzGYg==" crossorigin="anonymous"></script>
   <script>
     (() => {
       "use strict";
       const STORAGE_KEY = "nk-hub-coleta-v1";
       const detectorFormats = ["code_128","code_39","code_93","codabar","ean_13","ean_8","itf","qr_code"];
       const $ = (id) => document.getElementById(id);
-      const state = { collection:null, scans:[], found:[], stream:null, detector:null, timer:null, reading:false, zoom:1, zoomMin:1, zoomMax:2, autoZoomed:false, flash:false };
+      const state = { collection:null, scans:[], found:[], stream:null, detector:null, fallbackScanner:null, fallbackMode:false, timer:null, reading:false, zoom:1, zoomMin:1, zoomMax:2, autoZoomed:false, flash:false };
 
       function clean(value){ return String(value || "").trim(); }
+      function isAppleMobile(){ return /iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1); }
       function classify(value){ return value.replace(/\D/g,"").length >= 40 ? "NF" : "Pedido"; }
       function now(){ return new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}); }
       function collectionId(){ return "COLETA #" + new Date().toISOString().slice(2,10).replaceAll("-","") + "-" + String(Date.now()).slice(-4); }
@@ -236,7 +243,9 @@
         beep(); renderFound(); return true;
       }
       async function constraint(key,value){
-        const track=state.stream&&state.stream.getVideoTracks()[0];
+        const fallbackVideo=$("ios-reader").querySelector("video");
+        const activeStream=state.stream||(fallbackVideo&&fallbackVideo.srcObject);
+        const track=activeStream&&activeStream.getVideoTracks()[0];
         if(!track)return;
         try{ await track.applyConstraints({advanced:[{[key]:value}]}); }
         catch{ if(key==="torch")showToast("O flash não está disponível nesta câmera."); }
@@ -271,10 +280,55 @@
         }catch{}finally{state.reading=false}
       }
       async function openScanner(){
-        state.found=[]; state.autoZoomed=false; state.flash=false;
+        state.found=[]; state.autoZoomed=false; state.flash=false; state.fallbackMode=false;
         $("flash").classList.remove("on"); $("detected-box").classList.add("hidden");
         renderFound(); $("scanner").classList.remove("hidden");
         try{
+          if((isAppleMobile()||!("BarcodeDetector" in window)) && window.Html5Qrcode){
+            state.fallbackMode=true;
+            $("camera").classList.add("hidden");
+            $("ios-reader").classList.remove("hidden");
+            const formats=[
+              Html5QrcodeSupportedFormats.CODE_128,
+              Html5QrcodeSupportedFormats.CODE_39,
+              Html5QrcodeSupportedFormats.CODE_93,
+              Html5QrcodeSupportedFormats.CODABAR,
+              Html5QrcodeSupportedFormats.EAN_13,
+              Html5QrcodeSupportedFormats.EAN_8,
+              Html5QrcodeSupportedFormats.ITF,
+              Html5QrcodeSupportedFormats.QR_CODE
+            ];
+            state.fallbackScanner=new Html5Qrcode("ios-reader",{formatsToSupport:formats,verbose:false});
+            await state.fallbackScanner.start(
+              {facingMode:"environment"},
+              {
+                fps:15,
+                qrbox:(width,height)=>({
+                  width:Math.floor(Math.min(width*.9,440)),
+                  height:Math.floor(Math.min(height*.24,150))
+                }),
+                aspectRatio:1.333334,
+                disableFlip:false,
+                experimentalFeatures:{useBarCodeDetectorIfSupported:false}
+              },
+              decodedText=>register(decodedText),
+              ()=>{}
+            );
+            const capabilities=state.fallbackScanner.getRunningTrackCapabilities?state.fallbackScanner.getRunningTrackCapabilities():{};
+            if(capabilities.zoom){
+              state.zoomMin=Math.max(1,capabilities.zoom.min);
+              state.zoomMax=Math.min(capabilities.zoom.max,3);
+              $("zoom").min=state.zoomMin;
+              $("zoom").max=state.zoomMax;
+              await setZoom(Math.min(Math.max(1.7,state.zoomMin),Math.min(state.zoomMax,2)));
+              state.autoZoomed=true;
+            }else{
+              $("zoom").min=1; $("zoom").max=1; $("zoom").value=1; $("zoom-value").textContent="1.0x";
+            }
+            return;
+          }
+          $("camera").classList.remove("hidden");
+          $("ios-reader").classList.add("hidden");
           state.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1920},height:{ideal:1080}},audio:false});
           $("camera").srcObject=state.stream; await $("camera").play();
           const track=state.stream.getVideoTracks()[0],caps=track.getCapabilities?track.getCapabilities():{};
@@ -289,7 +343,7 @@
             state.detector=new BarcodeDetector({formats:detectorFormats});
             state.timer=setInterval(scanFrame,180);
           }else{
-            showToast("Leitura automática indisponível neste navegador. Digite o pedido no campo abaixo.");
+            showToast("O leitor não carregou. Atualize a página e tente novamente.");
           }
         }catch{
           showToast("Não foi possível acessar a câmera. Libere a permissão e tente novamente.");
@@ -300,6 +354,14 @@
         state.timer=null; state.detector=null; state.reading=false;
         if(state.stream)state.stream.getTracks().forEach(t=>t.stop());
         state.stream=null; $("camera").srcObject=null; $("scanner").classList.add("hidden");
+        if(state.fallbackScanner){
+          const scanner=state.fallbackScanner;
+          state.fallbackScanner=null;
+          scanner.stop().then(()=>scanner.clear()).catch(()=>{});
+        }
+        state.fallbackMode=false;
+        $("ios-reader").classList.add("hidden");
+        $("camera").classList.remove("hidden");
       }
 
       $("start-form").addEventListener("submit",event=>{
