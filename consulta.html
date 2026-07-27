@@ -301,6 +301,10 @@
         const adminClient=window.supabase.createClient(config.url,config.publishableKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:"nk-admin-create-user"}});
         return adminClient.auth.signUp({email,password});
       }
+      async function sendResetToEmail(email){
+        const redirectTo=new URL("consulta.html",location.href).href;
+        return client.auth.resetPasswordForEmail(email,{redirectTo});
+      }
       async function releaseUserByEmail(email,role,active){
         return client.rpc("admin_upsert_profile_by_email",{target_email:email,new_role:role,new_active:active,new_full_name:null});
       }
@@ -309,10 +313,13 @@
         const email=$("new-email").value.trim().toLowerCase(),password=$("new-password").value,role=$("new-role").value,active=$("new-active").value==="true";
         $("admin-message").textContent="Criando usuário...";
         const signup=await createAuthUser(email,password);
-        if(signup.error){
-          $("admin-message").textContent="Usuário já existe ou não pôde ser criado. Tentando liberar o acesso...";
+        const existingWithoutPasswordChange=!signup.error&&signup.data&&signup.data.user&&Array.isArray(signup.data.user.identities)&&signup.data.user.identities.length===0;
+        if(signup.error||existingWithoutPasswordChange){
+          $("admin-message").textContent="Usuário já existe. Liberando acesso e enviando link para criar nova senha...";
           const released=await releaseUserByEmail(email,role,active);
-          $("admin-message").textContent=released.error?released.error.message:"Usuário existente liberado/atualizado.";
+          if(released.error){$("admin-message").textContent=released.error.message;return;}
+          const reset=await sendResetToEmail(email);
+          $("admin-message").textContent=reset.error?`Usuário liberado, mas falhou ao enviar link de senha: ${reset.error.message}`:"Usuário existente liberado. A senha digitada não altera conta existente; link de redefinição enviado por e-mail.";
           if(!released.error){$("admin-create").reset();loadProfiles();}
           return;
         }
@@ -325,7 +332,7 @@
         const {error}=profile
           ? await client.rpc("admin_update_profile",{target_id:profile.id,new_role:role,new_active:active,new_full_name:null})
           : await releaseUserByEmail(email,role,active);
-        $("admin-message").textContent=error?error.message:"Usuário criado e liberado.";
+        $("admin-message").textContent=error?error.message:"Usuário criado e liberado. Se o login não entrar de primeira, use Reset senha para enviar um link seguro.";
         if(!error){$("admin-create").reset();loadProfiles();}
       }
       const normalizeHeader=value=>String(value||"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
