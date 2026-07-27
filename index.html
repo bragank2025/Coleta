@@ -196,9 +196,9 @@
           if(saved && saved.collection){ state.collection=saved.collection; state.scans=Array.isArray(saved.scans)?saved.scans:[]; }
         } catch {}
       }
-      function showToast(message){
+      function showToast(message,duration=3200){
         $("toast").textContent=message; $("toast").classList.remove("hidden");
-        clearTimeout(showToast.timer); showToast.timer=setTimeout(()=>$("toast").classList.add("hidden"),3200);
+        clearTimeout(showToast.timer); showToast.timer=setTimeout(()=>$("toast").classList.add("hidden"),duration);
       }
       function beep(){
         try{
@@ -257,7 +257,7 @@
           const stamp=Date.now();
           if(state.lastDuplicate!==valueClean||stamp-state.lastDuplicateAt>1800){
             state.lastDuplicate=valueClean; state.lastDuplicateAt=stamp;
-            showToast("Código já lido: "+valueClean);
+            showToast("Código já lido: "+valueClean,1400);
           }
           temporaryHint("Este código já foi lido",1100);
           return false;
@@ -266,12 +266,12 @@
         state.scanLocked=true;
         state.found=[record];
         state.scans=[record,...state.scans];
-        saveState(); render(); beep(); renderFound();
+        saveState(); beep(); renderFound();
         clearTimeout(state.successTimer);
         state.successTimer=setTimeout(()=>{
           state.found=[]; state.scanLocked=false; state.candidate=""; state.candidateHits=0;
           renderFound();
-        },420);
+        },280);
         return true;
       }
       function registerCamera(value){
@@ -285,17 +285,6 @@
           }
           return false;
         }
-        if(state.candidate!==valueClean || stamp-state.candidateAt>1400){
-          state.candidate=valueClean; state.candidateHits=1;
-        }else{
-          state.candidateHits+=1;
-        }
-        state.candidateAt=stamp;
-        if(state.candidateHits<2){
-          temporaryHint("Confirmando leitura...",500);
-          return false;
-        }
-        state.candidate=""; state.candidateHits=0;
         return register(valueClean);
       }
       async function constraint(key,value){
@@ -352,13 +341,13 @@
             await state.fallbackScanner.start(
               {facingMode:"environment"},
               {
-                fps:18,
+                fps:24,
                 qrbox:(width,height)=>({
-                  width:Math.floor(Math.min(width*.94,460)),
-                  height:Math.floor(Math.min(height*.2,130))
+                  width:Math.floor(Math.min(width*.96,500)),
+                  height:Math.floor(Math.min(height*.16,100))
                 }),
                 aspectRatio:1.333334,
-                disableFlip:false,
+                disableFlip:true,
                 experimentalFeatures:{useBarCodeDetectorIfSupported:false}
               },
               decodedText=>registerCamera(decodedText),
@@ -415,6 +404,7 @@
         state.fallbackMode=false;
         $("ios-reader").classList.add("hidden");
         $("camera").classList.remove("hidden");
+        render();
       }
 
       $("start-form").addEventListener("submit",event=>{
