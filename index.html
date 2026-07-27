@@ -169,7 +169,7 @@
       <input id="manual-code" inputmode="numeric" autocomplete="off" placeholder="Digite o pedido se necessário">
       <button type="submit">Ler</button>
     </form>
-    <button id="save-readings" class="save-readings">Gravar 0 código(s) <span>OK</span></button>
+    <div id="save-readings" class="save-readings">Leitura automática ativa <span>PRONTO</span></div>
   </section>
   <div id="toast" class="toast hidden" role="status"></div>
 
@@ -180,12 +180,12 @@
       const STORAGE_KEY = "nk-hub-coleta-v1";
       const detectorFormats = ["code_128"];
       const $ = (id) => document.getElementById(id);
-      const state = { collection:null, scans:[], found:[], stream:null, detector:null, fallbackScanner:null, fallbackMode:false, timer:null, reading:false, zoom:1, zoomMin:1, zoomMax:2, autoZoomed:false, flash:false, candidate:"", candidateHits:0, candidateAt:0, lastInvalidAt:0 };
+      const state = { collection:null, scans:[], found:[], stream:null, detector:null, fallbackScanner:null, fallbackMode:false, timer:null, reading:false, zoom:1, zoomMin:1, zoomMax:2, autoZoomed:false, flash:false, candidate:"", candidateHits:0, candidateAt:0, lastInvalidAt:0, scanLocked:false, successTimer:null, feedbackTimer:null, lastDuplicate:"", lastDuplicateAt:0 };
 
       function clean(value){ return String(value || "").trim(); }
       function isAppleMobile(){ return /iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1); }
       function normalizeCode(value){ return clean(value).replace(/\s+/g,""); }
-      function isValidCode(value){ return /^\d{8,44}$/.test(value); }
+      function isValidCode(value){ return /^\d{16}$/.test(value)||/^\d{44}$/.test(value); }
       function classify(value){ return value.length===44 ? "NF" : "Pedido"; }
       function now(){ return new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}); }
       function collectionId(){ return "COLETA #" + new Date().toISOString().slice(2,10).replaceAll("-","") + "-" + String(Date.now()).slice(-4); }
@@ -231,32 +231,57 @@
       function renderFound(){
         const success=state.found.length>0;
         $("guide-box").classList.toggle("success",success);
+        $("detected-box").classList.toggle("success",success);
         $("hint-dot").classList.toggle("green",success);
-        $("hint").textContent=success?"Código identificado":"Aponte para o código de barras";
-        $("read-results").innerHTML=success ? state.found.map((s,i)=>
-          `<div class="read-result"><small>Código ${i+1} (${escapeHtml(s.type)})</small><strong>${escapeHtml(s.value)}</strong><span>OK</span></div>`
-        ).join("") : "<p>Buscando código de barras...</p>";
-        $("save-readings").innerHTML=`Gravar ${state.found.length} código(s) <span>OK</span>`;
+        $("hint").textContent=success?"Código gravado":"Aponte para o próximo código";
+        $("read-results").innerHTML=success ? state.found.map(s=>
+          `<div class="read-result"><small>${escapeHtml(s.type)} gravado automaticamente</small><strong>${escapeHtml(s.value)}</strong><span>OK</span></div>`
+        ).join("") : "<p>Leitor ativo — pronto para o próximo código.</p>";
+        $("save-readings").innerHTML=success ? "Registrado automaticamente <span>OK</span>" : "Leitura automática ativa <span>PRONTO</span>";
+      }
+      function temporaryHint(message,duration=900){
+        clearTimeout(state.feedbackTimer);
+        $("guide-box").classList.remove("success");
+        $("detected-box").classList.remove("success");
+        $("hint-dot").classList.remove("green");
+        $("hint").textContent=message;
+        state.feedbackTimer=setTimeout(()=>{ if(!state.scanLocked&&!state.found.length)renderFound(); },duration);
       }
       function register(value,manual=false){
         const valueClean=normalizeCode(value);
         if(!isValidCode(valueClean)){
-          if(manual)showToast("Digite somente os números do pedido ou da chave da NF-e.");
+          if(manual)showToast("Informe um pedido de 16 dígitos ou uma chave de NF-e de 44 dígitos.");
           return false;
         }
-        if(state.found.length>=2 || state.found.some(s=>s.value===valueClean) || state.scans.some(s=>s.value===valueClean))return false;
-        state.found.push({value:valueClean,type:classify(valueClean),time:now()});
-        beep(); renderFound(); return true;
+        if(state.scans.some(s=>s.value===valueClean)){
+          const stamp=Date.now();
+          if(state.lastDuplicate!==valueClean||stamp-state.lastDuplicateAt>1800){
+            state.lastDuplicate=valueClean; state.lastDuplicateAt=stamp;
+            showToast("Código já lido: "+valueClean);
+          }
+          temporaryHint("Este código já foi lido",1100);
+          return false;
+        }
+        const record={value:valueClean,type:classify(valueClean),time:now()};
+        state.scanLocked=true;
+        state.found=[record];
+        state.scans=[record,...state.scans];
+        saveState(); render(); beep(); renderFound();
+        clearTimeout(state.successTimer);
+        state.successTimer=setTimeout(()=>{
+          state.found=[]; state.scanLocked=false; state.candidate=""; state.candidateHits=0;
+          renderFound();
+        },420);
+        return true;
       }
       function registerCamera(value){
         const valueClean=normalizeCode(value),stamp=Date.now();
+        if(state.scanLocked)return false;
         if(!isValidCode(valueClean)){
           state.candidate=""; state.candidateHits=0;
           if(stamp-state.lastInvalidAt>1200){
             state.lastInvalidAt=stamp;
-            $("guide-box").classList.remove("success");
-            $("hint-dot").classList.remove("green");
-            $("hint").textContent="Centralize o código numérico";
+            temporaryHint("Centralize o pedido ou a chave da NF-e",700);
           }
           return false;
         }
@@ -267,9 +292,7 @@
         }
         state.candidateAt=stamp;
         if(state.candidateHits<2){
-          $("guide-box").classList.remove("success");
-          $("hint-dot").classList.remove("green");
-          $("hint").textContent="Confirmando leitura...";
+          temporaryHint("Confirmando leitura...",500);
           return false;
         }
         state.candidate=""; state.candidateHits=0;
@@ -298,7 +321,7 @@
         el.classList.remove("hidden"); el.classList.toggle("success",state.found.length>0);
       }
       async function scanFrame(){
-        if(state.reading||!state.detector||state.found.length>=2)return;
+        if(state.reading||state.scanLocked||!state.detector)return;
         state.reading=true;
         try{
           const results=(await state.detector.detect($("camera"))).slice(0,2);
@@ -313,8 +336,10 @@
         }catch{}finally{state.reading=false}
       }
       async function openScanner(){
-        state.found=[]; state.autoZoomed=false; state.flash=false; state.fallbackMode=false;
+        state.found=[]; state.autoZoomed=false; state.flash=false; state.fallbackMode=false; state.scanLocked=false;
         state.candidate=""; state.candidateHits=0; state.candidateAt=0; state.lastInvalidAt=0;
+        state.lastDuplicate=""; state.lastDuplicateAt=0;
+        clearTimeout(state.successTimer); clearTimeout(state.feedbackTimer);
         $("flash").classList.remove("on"); $("detected-box").classList.add("hidden");
         renderFound(); $("scanner").classList.remove("hidden");
         try{
@@ -327,7 +352,7 @@
             await state.fallbackScanner.start(
               {facingMode:"environment"},
               {
-                fps:12,
+                fps:18,
                 qrbox:(width,height)=>({
                   width:Math.floor(Math.min(width*.94,460)),
                   height:Math.floor(Math.min(height*.2,130))
@@ -377,7 +402,9 @@
       }
       function closeScanner(){
         if(state.timer)clearInterval(state.timer);
+        clearTimeout(state.successTimer); clearTimeout(state.feedbackTimer);
         state.timer=null; state.detector=null; state.reading=false;
+        state.scanLocked=false; state.found=[];
         if(state.stream)state.stream.getTracks().forEach(t=>t.stop());
         state.stream=null; $("camera").srcObject=null; $("scanner").classList.add("hidden");
         if(state.fallbackScanner){
@@ -404,12 +431,6 @@
       $("zoom").addEventListener("input",event=>setZoom(event.target.value));
       $("manual-form").addEventListener("submit",event=>{
         event.preventDefault(); if(register($("manual-code").value,true))$("manual-code").value="";
-      });
-      $("save-readings").addEventListener("click",()=>{
-        if(!state.found.length){showToast("Nenhum código foi lido ainda.");return;}
-        const total=state.found.length;
-        state.scans=[...state.found,...state.scans]; saveState(); render(); closeScanner();
-        showToast(total+" código(s) gravado(s) na coleta.");
       });
       $("finish").addEventListener("click",()=>{
         closeScanner(); if(state.collection){state.collection.finishedAt=new Date().toISOString();saveState();}
