@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#183a31">
+  <title>NK HUB | Consultas de Coleta</title>
+  <style>
+    :root{--ink:#14211e;--muted:#70817a;--line:#dfe8e2;--cream:#f7f7f2;--lime:#caff43;--dark:#183a31;--red:#d6433c}
+    *{box-sizing:border-box} body{margin:0;background:#edf1ed;color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+    button,input,select{font:inherit}.hidden{display:none!important}
+    .login{min-height:100vh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at top,#285b4b,#10231d 68%)}
+    .login-card{width:min(430px,100%);background:#fff;border-radius:24px;padding:30px;box-shadow:0 25px 70px #07130f88}
+    .brand{display:flex;align-items:center;gap:9px;font-weight:900;letter-spacing:.04em}.mark{width:30px;height:30px;border-radius:9px;background:var(--lime);display:grid;place-items:center;color:var(--dark)}
+    .login h1{font-size:31px;letter-spacing:-.04em;margin:32px 0 8px}.login p{margin:0 0 24px;color:var(--muted);line-height:1.45}
+    label{display:block;font-size:12px;font-weight:800;margin-top:14px}input,select{width:100%;border:1px solid #d5e0da;border-radius:11px;padding:13px;margin-top:6px;background:#fff;outline-color:#78a953}
+    .primary{width:100%;margin-top:20px;border:0;border-radius:12px;padding:14px;background:var(--lime);color:var(--dark);font-weight:900;cursor:pointer}
+    .message{margin-top:14px!important;color:var(--red)!important;font-size:13px}.setup{background:#fff4cf;border:1px solid #ead17f;padding:13px;border-radius:11px;color:#705a12!important}
+    header{position:sticky;top:0;z-index:3;background:#fff;border-bottom:1px solid var(--line);padding:13px 22px;display:flex;align-items:center;justify-content:space-between;gap:15px}
+    header nav{display:flex;align-items:center;gap:9px}header a,header button{border:0;background:#edf3ef;color:var(--dark);padding:9px 11px;border-radius:9px;text-decoration:none;font-weight:800;font-size:12px;cursor:pointer}
+    main{max-width:1240px;margin:auto;padding:28px 20px 60px}.title-row{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:24px}
+    h1{font-size:34px;letter-spacing:-.05em;margin:0 0 5px}.subtitle{color:var(--muted);margin:0}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}.stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}.stat b{font-size:27px;display:block}.stat span{font-size:12px;color:var(--muted)}
+    .filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:9px;background:#fff;border:1px solid var(--line);padding:13px;border-radius:16px;margin-bottom:15px}.filters input,.filters select{margin:0}.filters button{border:0;background:var(--dark);color:#fff;border-radius:10px;padding:0 15px;font-weight:800;cursor:pointer}
+    .table-wrap{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:auto}table{width:100%;border-collapse:collapse;min-width:920px}th,td{text-align:left;border-bottom:1px solid #e7eee9;padding:13px;font-size:12px}th{color:var(--muted);font-size:10px;letter-spacing:.06em;background:#f9fbf9}tr:last-child td{border:0}.open-row{border:0;background:none;color:#267153;font-weight:900;cursor:pointer}.badge{display:inline-block;border-radius:20px;padding:5px 8px;background:#e5f4e8;color:#267153;font-weight:800}.badge.finished{background:#edf0ee;color:#62716b}
+    .empty{text-align:center!important;color:var(--muted);padding:38px!important}
+    dialog{width:min(760px,calc(100% - 30px));border:0;border-radius:20px;padding:0;box-shadow:0 25px 80px #0008}dialog::backdrop{background:#09100dbb}.dialog-head{padding:20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px}.dialog-head h2{margin:0}.dialog-head button{border:0;background:#edf2ee;border-radius:9px;width:36px;height:36px;cursor:pointer}.dialog-body{padding:20px;max-height:70vh;overflow:auto}.detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px}.detail-grid div{background:#f5f8f6;border-radius:10px;padding:11px}.detail-grid small,.detail-grid strong{display:block}.detail-grid small{color:var(--muted);margin-bottom:3px}.scan-row{display:grid;grid-template-columns:75px 1fr 125px 145px;gap:9px;border-top:1px solid var(--line);padding:11px 0;font-size:12px}.scan-row strong{overflow-wrap:anywhere}
+    @media(max-width:760px){header .user-email{display:none}.title-row{align-items:start;flex-direction:column}.stats{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr 1fr}.filters .search{grid-column:1/-1}.filters button{padding:13px}.detail-grid{grid-template-columns:1fr}.scan-row{grid-template-columns:65px 1fr}.scan-row span:nth-last-child(-n+2){color:var(--muted)}}
+  </style>
+</head>
+<body>
+  <section id="login" class="login">
+    <form id="login-form" class="login-card">
+      <div class="brand"><span class="mark">N</span> NK HUB</div>
+      <h1>Consultas de coleta</h1>
+      <p>Acesse o histórico central de viagens, pedidos e notas fiscais.</p>
+      <div id="setup-warning" class="setup hidden">O projeto Supabase ainda precisa ser conectado para liberar o acesso.</div>
+      <label>E-mail<input id="email" type="email" autocomplete="username" required></label>
+      <label>Senha<input id="password" type="password" autocomplete="current-password" required></label>
+      <button class="primary" type="submit">Entrar</button>
+      <p id="login-message" class="message"></p>
+    </form>
+  </section>
+
+  <section id="app" class="hidden">
+    <header>
+      <div class="brand"><span class="mark">N</span> NK HUB · CONSULTAS</div>
+      <nav><span id="user-email" class="user-email"></span><a href="./">Coletor</a><button id="logout">Sair</button></nav>
+    </header>
+    <main>
+      <div class="title-row"><div><h1>Histórico de coletas</h1><p class="subtitle">Auditoria centralizada de tudo que foi carregado.</p></div></div>
+      <section class="stats">
+        <div class="stat"><b id="stat-collections">0</b><span>coletas</span></div>
+        <div class="stat"><b id="stat-orders">0</b><span>pedidos</span></div>
+        <div class="stat"><b id="stat-nfs">0</b><span>notas fiscais</span></div>
+        <div class="stat"><b id="stat-open">0</b><span>em andamento</span></div>
+      </section>
+      <section class="filters">
+        <input id="search" class="search" placeholder="Pedido, NF, transportadora, placa ou motorista">
+        <input id="date-from" type="date" aria-label="Data inicial">
+        <input id="date-to" type="date" aria-label="Data final">
+        <select id="status"><option value="">Todos os status</option><option value="open">Em andamento</option><option value="finished">Finalizadas</option></select>
+        <button id="export">Exportar CSV</button>
+      </section>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>COLETA</th><th>INÍCIO</th><th>TRANSPORTADORA</th><th>PLACA</th><th>MOTORISTA</th><th>OPERADOR</th><th>PEDIDOS</th><th>NFs</th><th>STATUS</th><th></th></tr></thead>
+          <tbody id="rows"><tr><td class="empty" colspan="10">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+    </main>
+  </section>
+
+  <dialog id="details">
+    <div class="dialog-head"><div><small>DETALHES</small><h2 id="detail-title">Coleta</h2></div><button id="close-details">×</button></div>
+    <div id="detail-body" class="dialog-body"></div>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./supabase-config.js"></script>
+  <script>
+    (() => {
+      "use strict";
+      const $=id=>document.getElementById(id);
+      const config=window.NK_SUPABASE||{};
+      const configured=Boolean(config.url&&config.publishableKey);
+      const client=configured?window.supabase.createClient(config.url,config.publishableKey):null;
+      let collections=[],filtered=[];
+      const escapeHtml=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+      const formatDate=value=>value?new Date(value).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"}):"—";
+
+      async function boot(){
+        if(!configured){$("setup-warning").classList.remove("hidden");$("login-form").querySelector("button").disabled=true;return;}
+        const {data}=await client.auth.getSession();
+        if(data.session)showApp(data.session.user); else showLogin();
+        client.auth.onAuthStateChange((_event,session)=>session?showApp(session.user):showLogin());
+      }
+      function showLogin(){$("login").classList.remove("hidden");$("app").classList.add("hidden")}
+      async function showApp(user){
+        $("login").classList.add("hidden");$("app").classList.remove("hidden");$("user-email").textContent=user.email||"";
+        await loadCollections();
+      }
+      async function loadCollections(){
+        $("rows").innerHTML='<tr><td class="empty" colspan="10">Carregando...</td></tr>';
+        const {data,error}=await client.from("collections")
+          .select("id,collection_code,carrier,plate,driver,helper,operator_email,started_at,finished_at,status,scans(id,code_value,code_type,source,scanned_by_email,scanned_at)")
+          .order("started_at",{ascending:false}).limit(1000);
+        if(error){$("rows").innerHTML=`<tr><td class="empty" colspan="10">${escapeHtml(error.message)}</td></tr>`;return;}
+        collections=data||[];applyFilters();
+      }
+      function applyFilters(){
+        const term=$("search").value.trim().toLowerCase(),from=$("date-from").value,to=$("date-to").value,status=$("status").value;
+        filtered=collections.filter(c=>{
+          const hay=[c.collection_code,c.carrier,c.plate,c.driver,c.helper,c.operator_email,...(c.scans||[]).map(s=>s.code_value)].join(" ").toLowerCase();
+          const day=(c.started_at||"").slice(0,10);
+          return(!term||hay.includes(term))&&(!from||day>=from)&&(!to||day<=to)&&(!status||c.status===status);
+        });
+        render();
+      }
+      function render(){
+        const scans=filtered.flatMap(c=>c.scans||[]);
+        $("stat-collections").textContent=filtered.length;
+        $("stat-orders").textContent=scans.filter(s=>s.code_type==="Pedido").length;
+        $("stat-nfs").textContent=scans.filter(s=>s.code_type==="NF").length;
+        $("stat-open").textContent=filtered.filter(c=>c.status==="open").length;
+        $("rows").innerHTML=filtered.length?filtered.map(c=>{
+          const pedidos=(c.scans||[]).filter(s=>s.code_type==="Pedido").length,nfs=(c.scans||[]).filter(s=>s.code_type==="NF").length;
+          return `<tr><td><strong>${escapeHtml(c.collection_code)}</strong></td><td>${escapeHtml(formatDate(c.started_at))}</td><td>${escapeHtml(c.carrier)}</td><td>${escapeHtml(c.plate)}</td><td>${escapeHtml(c.driver)}</td><td>${escapeHtml(c.operator_email)}</td><td>${pedidos}</td><td>${nfs}</td><td><span class="badge ${c.status==="finished"?"finished":""}">${c.status==="finished"?"Finalizada":"Em andamento"}</span></td><td><button class="open-row" data-id="${c.id}">Abrir</button></td></tr>`;
+        }).join(""):'<tr><td class="empty" colspan="10">Nenhuma coleta encontrada.</td></tr>';
+      }
+      function openDetails(id){
+        const c=collections.find(item=>item.id===id);if(!c)return;
+        $("detail-title").textContent=c.collection_code;
+        $("detail-body").innerHTML=`<div class="detail-grid">
+          <div><small>Transportadora</small><strong>${escapeHtml(c.carrier)}</strong></div><div><small>Placa</small><strong>${escapeHtml(c.plate)}</strong></div>
+          <div><small>Motorista</small><strong>${escapeHtml(c.driver)}</strong></div><div><small>Ajudante</small><strong>${escapeHtml(c.helper||"—")}</strong></div>
+          <div><small>Operador</small><strong>${escapeHtml(c.operator_email)}</strong></div><div><small>Período</small><strong>${escapeHtml(formatDate(c.started_at))} até ${escapeHtml(formatDate(c.finished_at))}</strong></div>
+        </div><h3>Códigos (${(c.scans||[]).length})</h3>${(c.scans||[]).length?(c.scans||[]).sort((a,b)=>new Date(b.scanned_at)-new Date(a.scanned_at)).map(s=>
+          `<div class="scan-row"><b>${escapeHtml(s.code_type)}</b><strong>${escapeHtml(s.code_value)}</strong><span>${escapeHtml(s.source)}</span><span>${escapeHtml(formatDate(s.scanned_at))}</span></div>`
+        ).join(""):'<p>Nenhum código registrado.</p>'}`;
+        $("details").showModal();
+      }
+      function exportCsv(){
+        const rows=[["Coleta","Transportadora","Placa","Motorista","Operador","Início","Fim","Tipo","Código","Origem","Leitura"]];
+        filtered.forEach(c=>(c.scans||[]).forEach(s=>rows.push([c.collection_code,c.carrier,c.plate,c.driver,c.operator_email,c.started_at,c.finished_at||"",s.code_type,s.code_value,s.source,s.scanned_at])));
+        const csv="\ufeff"+rows.map(row=>row.map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(";")).join("\r\n");
+        const link=document.createElement("a");link.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));link.download="coletas-nk-hub.csv";link.click();URL.revokeObjectURL(link.href);
+      }
+      $("login-form").addEventListener("submit",async event=>{
+        event.preventDefault();$("login-message").textContent="Entrando...";
+        const {error}=await client.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
+        $("login-message").textContent=error?"E-mail ou senha inválidos.":"";
+      });
+      $("logout").addEventListener("click",()=>client.auth.signOut());
+      ["search","date-from","date-to","status"].forEach(id=>$(id).addEventListener("input",applyFilters));
+      $("export").addEventListener("click",exportCsv);
+      $("rows").addEventListener("click",event=>{const button=event.target.closest("[data-id]");if(button)openDetails(button.dataset.id)});
+      $("close-details").addEventListener("click",()=>$("details").close());
+      boot();
+    })();
+  </script>
+</body>
+</html>

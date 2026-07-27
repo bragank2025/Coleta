@@ -102,10 +102,29 @@
     .save-readings{width:100%;border:0;border-radius:13px;background:var(--lime);color:#16372b;font-weight:800;padding:16px;margin-top:12px;display:flex;justify-content:space-between}
     .empty{color:var(--muted);font-size:13px;justify-content:center}
     .toast{position:fixed;z-index:10;top:calc(20px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:calc(100% - 40px);max-width:460px;background:#173c31;color:white;padding:13px 16px;border-radius:12px;font-size:13px;box-shadow:0 8px 25px #0003}
+    .auth-gate{position:fixed;z-index:30;inset:0;background:radial-gradient(circle at top,#285b4b,#10231d 68%);display:grid;place-items:center;padding:22px}
+    .auth-card{width:min(420px,100%);background:#fff;border-radius:22px;padding:27px;box-shadow:0 25px 70px #0008}
+    .auth-card h2{font-size:29px;letter-spacing:-.04em;margin:28px 0 6px}.auth-card p{font-size:13px}.auth-card .message{color:#c33;margin-top:12px;font-size:12px}
+    .account-bar{position:fixed;z-index:5;right:14px;top:calc(12px + env(safe-area-inset-top));display:flex;gap:6px}
+    .account-bar a,.account-bar button{border:0;border-radius:9px;background:#e5eee8;color:var(--dark);padding:8px 9px;text-decoration:none;font-size:11px;font-weight:800}
+    .sync-state{position:fixed;z-index:5;left:50%;bottom:calc(78px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#173c31;color:#fff;border-radius:20px;padding:7px 11px;font-size:10px;box-shadow:0 6px 20px #0003}
     @media(min-width:700px){.shell{box-shadow:0 0 45px #183a3118}}
   </style>
 </head>
 <body>
+  <section id="auth-gate" class="auth-gate hidden">
+    <form id="auth-form" class="auth-card">
+      <div class="brand"><span class="brand-mark">N</span> NK HUB</div>
+      <h2>Acesso ao coletor</h2>
+      <p>Entre com seu e-mail e senha para registrar a operação.</p>
+      <label>E-mail<input id="auth-email" type="email" autocomplete="username" required></label>
+      <label>Senha<input id="auth-password" type="password" autocomplete="current-password" required></label>
+      <button class="primary" type="submit">Entrar <span>IR</span></button>
+      <p id="auth-message" class="message"></p>
+    </form>
+  </section>
+  <div id="account-bar" class="account-bar hidden"><a href="./consulta.html">Consultas</a><button id="account-logout">Sair</button></div>
+  <div id="sync-state" class="sync-state hidden">Dados sincronizados</div>
   <main id="onboarding" class="shell onboarding">
     <div class="brand"><span class="brand-mark">N</span> NK HUB</div>
     <div class="eyebrow">EXPEDIÇÃO</div>
@@ -189,6 +208,9 @@
   <div id="toast" class="toast hidden" role="status"></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js" integrity="sha512-r6rDA7W6ZeQhvl8S7yRVQUKVHdexq+GAlNkNNqVC7YyIV+NwqCTJe2hDWCiffTyRNOeGEzRRJ9ifvRm/HCzGYg==" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./supabase-config.js"></script>
+  <script src="./data-service.js"></script>
   <script>
     (() => {
       "use strict";
@@ -284,6 +306,14 @@
         state.scans=[record,...state.scans];
         saveState(); beep();
         if(scannerOpen)renderFound(); else render();
+        if(window.NKData&&NKData.configured){
+          NKData.addScan(state.collection,record).then(result=>{
+            if(result&&result.duplicate){
+              state.scans=state.scans.filter(scan=>scan.value!==record.value);
+              saveState();render();showToast("Código já havia sido lido em outra coleta.");
+            }
+          });
+        }
         clearTimeout(state.successTimer);
         state.successTimer=setTimeout(()=>{
           state.found=[]; state.scanLocked=false; state.candidate=""; state.candidateHits=0;
@@ -428,6 +458,7 @@
         event.preventDefault();
         state.collection={id:collectionId(),carrier:clean($("carrier").value),plate:clean($("plate").value).toUpperCase(),driver:clean($("driver").value),helper:clean($("helper").value),startedAt:new Date().toISOString()};
         state.scans=[]; saveState(); render();
+        if(window.NKData&&NKData.configured)NKData.createCollection(state.collection);
       });
       $("exit").addEventListener("click",()=>{ closeScanner(); state.collection=null; state.scans=[]; localStorage.removeItem(STORAGE_KEY); render(); });
       $("open-scanner").addEventListener("click",openScanner);
@@ -455,10 +486,32 @@
       });
       $("finish").addEventListener("click",()=>{
         closeScanner(); if(state.collection){state.collection.finishedAt=new Date().toISOString();saveState();}
+        if(window.NKData&&NKData.configured&&state.collection)NKData.finishCollection(state.collection);
         showToast("Coleta finalizada com "+state.scans.length+" registro(s).");
       });
       window.addEventListener("pagehide",()=>{ if(state.stream)state.stream.getTracks().forEach(t=>t.stop()); });
-      loadState(); render();
+      $("auth-form").addEventListener("submit",async event=>{
+        event.preventDefault();$("auth-message").textContent="Entrando...";
+        const result=await NKData.signIn($("auth-email").value.trim(),$("auth-password").value);
+        if(result.error){$("auth-message").textContent="E-mail ou senha inválidos.";return;}
+        $("auth-message").textContent="";$("auth-gate").classList.add("hidden");$("account-bar").classList.remove("hidden");
+        loadState();render();
+      });
+      $("account-logout").addEventListener("click",async()=>{
+        closeScanner();await NKData.signOut();$("account-bar").classList.add("hidden");$("auth-gate").classList.remove("hidden");
+      });
+      window.addEventListener("nk-sync",event=>{
+        const detail=event.detail||{},el=$("sync-state");
+        el.textContent=detail.status==="queued" ? `${detail.pending} registro(s) aguardando internet` : detail.status==="duplicate" ? "Código já existente no banco" : "Dados sincronizados";
+        el.classList.remove("hidden");clearTimeout(el.timer);el.timer=setTimeout(()=>el.classList.add("hidden"),2600);
+      });
+      (async()=>{
+        const auth=await NKData.init();
+        if(auth.configured){
+          if(auth.user){$("account-bar").classList.remove("hidden");loadState();render();}
+          else $("auth-gate").classList.remove("hidden");
+        }else{loadState();render();}
+      })();
     })();
   </script>
 </body>
