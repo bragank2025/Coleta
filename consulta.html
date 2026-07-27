@@ -185,7 +185,7 @@
       async function loadCollections(){
         $("rows").innerHTML='<tr><td class="empty" colspan="10">Carregando...</td></tr>';
         const {data,error}=await client.from("collections")
-          .select("id,collection_code,carrier,plate,driver,helper,operator_email,started_at,finished_at,status,signature_name,signature_data_url,signature_at,scans(id,code_value,code_type,source,marketplace,venda,nf,scanned_by_email,scanned_at)")
+          .select("id,collection_code,carrier,plate,driver,helper,operator_email,started_at,finished_at,status,signature_name,signature_data_url,signature_at,proof_html,scans(id,code_value,code_type,source,marketplace,venda,nf,scanned_by_email,scanned_at)")
           .order("started_at",{ascending:false}).limit(1000);
         if(error){$("rows").innerHTML=`<tr><td class="empty" colspan="10">${escapeHtml(error.message)}</td></tr>`;return;}
         collections=data||[];applyFilters();
@@ -384,14 +384,22 @@
         const c=collections.find(x=>x.id===id); if(!c)return;
         $("detail-title").textContent=c.collection_code;
         const scanRows=(c.scans||[]).sort((a,b)=>new Date(b.scanned_at)-new Date(a.scanned_at)).map(s=>`<tr><td>${escapeHtml(s.nf||s.code_type==="NF"&&s.code_value||"—")}</td><td>${escapeHtml(s.marketplace||"—")}</td><td>${escapeHtml(s.venda||s.code_type==="Pedido"&&s.code_value||"—")}</td><td>${escapeHtml(s.code_type)}</td><td>${escapeHtml(s.source||"—")}</td><td>${escapeHtml(formatDate(s.scanned_at))}</td></tr>`).join("");
+        const proof=c.proof_html?`<p><button class="open-row" data-proof-id="${escapeHtml(c.id)}" type="button">Ver comprovante / PDF</button></p>`:"";
         const signature=c.signature_data_url?`<h3>Assinatura do motorista</h3><p><strong>${escapeHtml(c.signature_name||c.driver||"—")}</strong> · ${escapeHtml(formatDate(c.signature_at))}</p><img alt="Assinatura" src="${c.signature_data_url}" style="max-width:420px;width:100%;border:1px solid #ddd;border-radius:12px;padding:8px;background:#fff">`:"";
         $("detail-body").innerHTML=`<div class="detail-grid">
           <div><small>Transportadora</small><strong>${escapeHtml(c.carrier)}</strong></div><div><small>Placa</small><strong>${escapeHtml(c.plate)}</strong></div>
           <div><small>Motorista</small><strong>${escapeHtml(c.driver)}</strong></div><div><small>Ajudante</small><strong>${escapeHtml(c.helper||"—")}</strong></div>
           <div><small>Operador</small><strong>${escapeHtml(c.operator_email)}</strong></div><div><small>Período</small><strong>${escapeHtml(formatDate(c.started_at))} até ${escapeHtml(formatDate(c.finished_at))}</strong></div>
-        </div><h3>Códigos (${(c.scans||[]).length})</h3>${(c.scans||[]).length?`<div class="table-wrap"><table><thead><tr><th>NF</th><th>Marketplace</th><th>Venda</th><th>Tipo</th><th>Origem</th><th>Data e horário da conferência</th></tr></thead><tbody>${scanRows}</tbody></table></div>`:'<p>Nenhum código registrado.</p>'}${signature}`;
+        </div>${proof}<h3>Códigos (${(c.scans||[]).length})</h3>${(c.scans||[]).length?`<div class="table-wrap"><table><thead><tr><th>NF</th><th>Marketplace</th><th>Venda</th><th>Tipo</th><th>Origem</th><th>Data e horário da conferência</th></tr></thead><tbody>${scanRows}</tbody></table></div>`:'<p>Nenhum código registrado.</p>'}${signature}`;
         $("details").showModal();
-      }      function exportCsv(){
+      }
+      function openProof(id){
+        const c=collections.find(x=>x.id===id&&x.proof_html); if(!c)return;
+        const win=window.open("","_blank");
+        if(!win){alert("Pop-up bloqueado. Libere pop-ups para visualizar o comprovante.");return;}
+        win.document.open();win.document.write(c.proof_html);win.document.close();
+      }
+      function exportCsv(){
         const rows=[["Coleta","Transportadora","Placa","Motorista","Operador","Início","Fim","Tipo","Código","Marketplace","Venda","NF","Origem","Leitura"]];
         filtered.forEach(c=>(c.scans||[]).forEach(s=>rows.push([c.collection_code,c.carrier,c.plate,c.driver,c.operator_email,c.started_at,c.finished_at||"",s.code_type,s.code_value,s.marketplace||"",s.venda||"",s.nf||"",s.source,s.scanned_at])));
         const csv="\ufeff"+rows.map(row=>row.map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(";")).join("\r\n");
@@ -424,6 +432,7 @@
       $("ref-next").addEventListener("click",()=>{refsPage++;renderRefs();});
       $("export").addEventListener("click",exportCsv);
       $("rows").addEventListener("click",event=>{const button=event.target.closest("[data-id]");if(button)openDetails(button.dataset.id)});
+      $("detail-body").addEventListener("click",event=>{const button=event.target.closest("[data-proof-id]");if(button)openProof(button.dataset.proofId)});
       $("close-details").addEventListener("click",()=>$("details").close());
       boot();
     })();

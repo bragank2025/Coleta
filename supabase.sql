@@ -37,6 +37,7 @@ create table if not exists public.collections (
   signature_name text,
   signature_data_url text,
   signature_at timestamptz,
+  proof_html text,
   status text not null default 'open' check (status in ('open', 'finished')),
   created_at timestamptz not null default now()
 );
@@ -44,6 +45,7 @@ create table if not exists public.collections (
 alter table public.collections add column if not exists signature_name text;
 alter table public.collections add column if not exists signature_data_url text;
 alter table public.collections add column if not exists signature_at timestamptz;
+alter table public.collections add column if not exists proof_html text;
 
 create table if not exists public.scans (
   id uuid primary key default gen_random_uuid(),

@@ -549,19 +549,19 @@
         const collection=state.collection||{};
         const rows=state.scans.map(scan=>`<tr><td>${escapeHtml(scan.nf||scan.type==="NF"&&scan.value||"—")}</td><td>${escapeHtml(scan.marketplace||"—")}</td><td>${escapeHtml(scan.venda||scan.type==="Pedido"&&scan.value||"—")}</td><td>${escapeHtml(scan.time)}</td></tr>`).join("");
         const pedidos=state.scans.filter(s=>s.type==="Pedido").length;
-        const nfs=state.scans.filter(s=>s.type==="NF").length;
+        const nfs=new Set(state.scans.map(s=>s.nf||s.type==="NF"&&s.value).filter(Boolean)).size;
         return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Comprovante ${escapeHtml(collection.id||"")}</title><style>body{font-family:Arial,sans-serif;color:#111;margin:28px}h1{margin:0 0 4px}.muted{color:#666}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:18px 0}.card{border:1px solid #ddd;border-radius:10px;padding:10px}table{width:100%;border-collapse:collapse;margin-top:16px}th,td{border:1px solid #ddd;padding:7px;text-align:left;font-size:12px}th{background:#f3f4f6}.signature{margin-top:22px}.signature img{max-width:420px;border:1px solid #ddd;border-radius:8px;padding:8px}.actions{margin-bottom:18px}@media print{.actions{display:none}body{margin:12mm}}</style></head><body><div class="actions"><button onclick="window.print()">Salvar / imprimir PDF</button></div><h1>Comprovante de conferência de coleta</h1><div class="muted">Gerado em ${escapeHtml(now())}</div><div class="grid"><div class="card"><b>Coleta</b><br>${escapeHtml(collection.id||"—")}</div><div class="card"><b>Transportadora</b><br>${escapeHtml(collection.carrier||"—")}</div><div class="card"><b>Placa</b><br>${escapeHtml(collection.plate||"—")}</div><div class="card"><b>Motorista</b><br>${escapeHtml(collection.driver||"—")}</div><div class="card"><b>Início</b><br>${escapeHtml(collection.startedAt?new Date(collection.startedAt).toLocaleString("pt-BR"):"—")}</div><div class="card"><b>Fim</b><br>${escapeHtml(collection.finishedAt?new Date(collection.finishedAt).toLocaleString("pt-BR"):"—")}</div><div class="card"><b>Pedidos</b><br>${pedidos}</div><div class="card"><b>NFs</b><br>${nfs}</div></div><table><thead><tr><th>NF</th><th>Marketplace</th><th>Venda</th><th>Data e horário da conferência</th></tr></thead><tbody>${rows}</tbody></table><div class="signature"><h2>Assinatura do motorista</h2><p><b>${escapeHtml(signature.name||collection.driver||"—")}</b></p><img src="${signature.dataUrl}" alt="Assinatura"></div></body></html>`;
       }
       function openProof(signature){
         const win=window.open("","_blank");
         if(!win){showToast("Pop-up bloqueado. Libere para abrir o comprovante em PDF.",4200);return;}
         win.document.open();win.document.write(proofHtml(signature));win.document.close();
-        setTimeout(()=>win.print(),450);
       }
       async function confirmFinishWithSignature(){
         if(!signatureState.hasInk){showToast("Peça para o motorista assinar antes de finalizar.");return;}
         state.collection.finishedAt=new Date().toISOString();
         const signature={name:clean($("signature-name").value)||state.collection.driver,dataUrl:signatureCanvas().toDataURL("image/png"),at:new Date().toISOString()};
+        signature.proofHtml=proofHtml(signature);
         state.collection.signature=signature;
         saveState();
         let result={ok:true};
@@ -606,7 +606,7 @@
       });
       window.addEventListener("nk-sync",event=>{
         const detail=event.detail||{},el=$("sync-state");
-        el.textContent=detail.status==="queued" ? `${detail.pending} registro(s) aguardando internet` : detail.status==="duplicate" ? "Código já existente no banco" : "Dados sincronizados";
+        el.textContent=detail.status==="queued" ? `${detail.pending} registro(s) aguardando internet` : detail.status==="duplicate" ? "Código já existente no banco" : detail.status==="error" ? "Pendência antiga removida. Faça nova coleta se necessário." : "Dados sincronizados";
         el.classList.remove("hidden");clearTimeout(el.timer);el.timer=setTimeout(()=>el.classList.add("hidden"),2600);
       });
       (async()=>{

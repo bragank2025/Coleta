@@ -56,7 +56,8 @@
         finished_at:operation.payload.finished_at,
         signature_name:operation.payload.signature_name||null,
         signature_data_url:operation.payload.signature_data_url||null,
-        signature_at:operation.payload.signature_at||null
+        signature_at:operation.payload.signature_at||null,
+        proof_html:operation.payload.proof_html||null
       }).eq("id",id);
       if(error)throw error;
     }
@@ -74,7 +75,8 @@
       try{await execute(operation)}
       catch(error){
         if(error&&error.code==="23505")notify({status:"duplicate",code:operation.payload.code_value});
-        else remaining.push(operation);
+        else if(shouldQueue(error))remaining.push(operation);
+        else notify({status:"error",message:error&&error.message,pending:0});
       }
     }
     writeQueue(remaining);syncing=false;
@@ -156,7 +158,8 @@
       finished_at:collection.finishedAt||new Date().toISOString(),
       signature_name:signature&&signature.name,
       signature_data_url:signature&&signature.dataUrl,
-      signature_at:(signature&&signature.at)||new Date().toISOString()
+      signature_at:(signature&&signature.at)||new Date().toISOString(),
+      proof_html:signature&&signature.proofHtml
     });
   }
   window.NKData={configured,client,init,signIn,signOut,createCollection,addScan,finishCollection,lookupSaleRef,sync,getUser:()=>user,getPending:()=>readQueue().length};
