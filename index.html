@@ -178,13 +178,15 @@
     (() => {
       "use strict";
       const STORAGE_KEY = "nk-hub-coleta-v1";
-      const detectorFormats = ["code_128","code_39","code_93","codabar","ean_13","ean_8","itf","qr_code"];
+      const detectorFormats = ["code_128"];
       const $ = (id) => document.getElementById(id);
-      const state = { collection:null, scans:[], found:[], stream:null, detector:null, fallbackScanner:null, fallbackMode:false, timer:null, reading:false, zoom:1, zoomMin:1, zoomMax:2, autoZoomed:false, flash:false };
+      const state = { collection:null, scans:[], found:[], stream:null, detector:null, fallbackScanner:null, fallbackMode:false, timer:null, reading:false, zoom:1, zoomMin:1, zoomMax:2, autoZoomed:false, flash:false, candidate:"", candidateHits:0, candidateAt:0, lastInvalidAt:0 };
 
       function clean(value){ return String(value || "").trim(); }
       function isAppleMobile(){ return /iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1); }
-      function classify(value){ return value.replace(/\D/g,"").length >= 40 ? "NF" : "Pedido"; }
+      function normalizeCode(value){ return clean(value).replace(/\s+/g,""); }
+      function isValidCode(value){ return /^\d{8,44}$/.test(value); }
+      function classify(value){ return value.length===44 ? "NF" : "Pedido"; }
       function now(){ return new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}); }
       function collectionId(){ return "COLETA #" + new Date().toISOString().slice(2,10).replaceAll("-","") + "-" + String(Date.now()).slice(-4); }
       function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify({collection:state.collection, scans:state.scans})); }
@@ -236,11 +238,42 @@
         ).join("") : "<p>Buscando código de barras...</p>";
         $("save-readings").innerHTML=`Gravar ${state.found.length} código(s) <span>OK</span>`;
       }
-      function register(value){
-        const valueClean=clean(value);
-        if(!valueClean || state.found.length>=2 || state.found.some(s=>s.value===valueClean) || state.scans.some(s=>s.value===valueClean))return false;
+      function register(value,manual=false){
+        const valueClean=normalizeCode(value);
+        if(!isValidCode(valueClean)){
+          if(manual)showToast("Digite somente os números do pedido ou da chave da NF-e.");
+          return false;
+        }
+        if(state.found.length>=2 || state.found.some(s=>s.value===valueClean) || state.scans.some(s=>s.value===valueClean))return false;
         state.found.push({value:valueClean,type:classify(valueClean),time:now()});
         beep(); renderFound(); return true;
+      }
+      function registerCamera(value){
+        const valueClean=normalizeCode(value),stamp=Date.now();
+        if(!isValidCode(valueClean)){
+          state.candidate=""; state.candidateHits=0;
+          if(stamp-state.lastInvalidAt>1200){
+            state.lastInvalidAt=stamp;
+            $("guide-box").classList.remove("success");
+            $("hint-dot").classList.remove("green");
+            $("hint").textContent="Centralize o código numérico";
+          }
+          return false;
+        }
+        if(state.candidate!==valueClean || stamp-state.candidateAt>1400){
+          state.candidate=valueClean; state.candidateHits=1;
+        }else{
+          state.candidateHits+=1;
+        }
+        state.candidateAt=stamp;
+        if(state.candidateHits<2){
+          $("guide-box").classList.remove("success");
+          $("hint-dot").classList.remove("green");
+          $("hint").textContent="Confirmando leitura...";
+          return false;
+        }
+        state.candidate=""; state.candidateHits=0;
+        return register(valueClean);
       }
       async function constraint(key,value){
         const fallbackVideo=$("ios-reader").querySelector("video");
@@ -276,11 +309,12 @@
               await setZoom(Math.min(Math.max(1.7,state.zoomMin),Math.min(state.zoomMax,2)));
             }
           }
-          results.forEach(r=>r.rawValue&&register(r.rawValue));
+          results.forEach(r=>r.rawValue&&registerCamera(r.rawValue));
         }catch{}finally{state.reading=false}
       }
       async function openScanner(){
         state.found=[]; state.autoZoomed=false; state.flash=false; state.fallbackMode=false;
+        state.candidate=""; state.candidateHits=0; state.candidateAt=0; state.lastInvalidAt=0;
         $("flash").classList.remove("on"); $("detected-box").classList.add("hidden");
         renderFound(); $("scanner").classList.remove("hidden");
         try{
@@ -288,30 +322,21 @@
             state.fallbackMode=true;
             $("camera").classList.add("hidden");
             $("ios-reader").classList.remove("hidden");
-            const formats=[
-              Html5QrcodeSupportedFormats.CODE_128,
-              Html5QrcodeSupportedFormats.CODE_39,
-              Html5QrcodeSupportedFormats.CODE_93,
-              Html5QrcodeSupportedFormats.CODABAR,
-              Html5QrcodeSupportedFormats.EAN_13,
-              Html5QrcodeSupportedFormats.EAN_8,
-              Html5QrcodeSupportedFormats.ITF,
-              Html5QrcodeSupportedFormats.QR_CODE
-            ];
+            const formats=[Html5QrcodeSupportedFormats.CODE_128];
             state.fallbackScanner=new Html5Qrcode("ios-reader",{formatsToSupport:formats,verbose:false});
             await state.fallbackScanner.start(
               {facingMode:"environment"},
               {
-                fps:15,
+                fps:12,
                 qrbox:(width,height)=>({
-                  width:Math.floor(Math.min(width*.9,440)),
-                  height:Math.floor(Math.min(height*.24,150))
+                  width:Math.floor(Math.min(width*.94,460)),
+                  height:Math.floor(Math.min(height*.2,130))
                 }),
                 aspectRatio:1.333334,
                 disableFlip:false,
                 experimentalFeatures:{useBarCodeDetectorIfSupported:false}
               },
-              decodedText=>register(decodedText),
+              decodedText=>registerCamera(decodedText),
               ()=>{}
             );
             const capabilities=state.fallbackScanner.getRunningTrackCapabilities?state.fallbackScanner.getRunningTrackCapabilities():{};
@@ -320,7 +345,8 @@
               state.zoomMax=Math.min(capabilities.zoom.max,3);
               $("zoom").min=state.zoomMin;
               $("zoom").max=state.zoomMax;
-              await setZoom(Math.min(Math.max(1.7,state.zoomMin),Math.min(state.zoomMax,2)));
+              await constraint("focusMode","continuous");
+              await setZoom(Math.min(Math.max(1.3,state.zoomMin),Math.min(state.zoomMax,1.5)));
               state.autoZoomed=true;
             }else{
               $("zoom").min=1; $("zoom").max=1; $("zoom").value=1; $("zoom-value").textContent="1.0x";
@@ -377,7 +403,7 @@
       });
       $("zoom").addEventListener("input",event=>setZoom(event.target.value));
       $("manual-form").addEventListener("submit",event=>{
-        event.preventDefault(); if(register($("manual-code").value))$("manual-code").value="";
+        event.preventDefault(); if(register($("manual-code").value,true))$("manual-code").value="";
       });
       $("save-readings").addEventListener("click",()=>{
         if(!state.found.length){showToast("Nenhum código foi lido ainda.");return;}
