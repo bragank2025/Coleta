@@ -38,6 +38,14 @@
     .scan-icon{color:var(--lime);font-size:55px;transform:rotate(90deg)}
     .scan-area h2{margin:0 0 6px;font-size:20px}
     .scan-area p{color:#bbcec5;font-size:13px}
+    .external-reader{margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px}
+    .external-head{display:flex;align-items:center;gap:10px}
+    .external-head i{width:10px;height:10px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 4px #caff4333}
+    .external-head strong,.external-head small{display:block}
+    .external-head small{color:var(--muted);font-size:11px;margin-top:2px}
+    .external-form{display:flex;gap:8px;margin-top:12px}
+    .external-form input{margin:0;min-width:0}
+    .external-form button{border:0;background:var(--dark);color:#fff;border-radius:10px;padding:0 14px;font-weight:800}
     .primary{margin-top:20px;border:0;background:var(--lime);color:#17372e;font-weight:800;border-radius:12px;padding:15px 17px;width:100%;display:flex;justify-content:space-between}
     .list-head{margin:30px 0 12px;align-items:end}
     .list-head h2{font-size:18px;margin:0 0 4px}
@@ -138,6 +146,13 @@
       <p>Leia o pedido. Se a chave da NF também ler, ela fica vinculada automaticamente.</p>
       <button id="open-scanner" class="primary">Abrir leitor <span>SCAN</span></button>
     </section>
+    <section class="external-reader">
+      <div class="external-head"><i></i><div><strong>Leitor adicional</strong><small>Compatível com leitores Bluetooth ou USB em modo teclado</small></div></div>
+      <form id="external-form" class="external-form">
+        <input id="external-code" inputmode="none" autocomplete="off" placeholder="Toque aqui e bipe no leitor físico">
+        <button type="submit">Registrar</button>
+      </form>
+    </section>
     <section class="list-head">
       <div><h2>Registros da coleta</h2><p>Pedido e NF ficam vinculados a esta viagem</p></div>
       <span id="item-count">0 itens</span>
@@ -222,7 +237,7 @@
         $("pedido-count").textContent=pedidos; $("nf-count").textContent=nfs;
         $("item-count").textContent=state.scans.length+" "+(state.scans.length===1?"item":"itens");
         $("scan-list").innerHTML=state.scans.length ? state.scans.map(s=>
-          `<article><span class="check">OK</span><div><strong>${escapeHtml(s.type)}: ${escapeHtml(s.value)}</strong><small>Registrado às ${escapeHtml(s.time)}</small></div></article>`
+          `<article><span class="check">OK</span><div><strong>${escapeHtml(s.type)}: ${escapeHtml(s.value)}</strong><small>Registrado às ${escapeHtml(s.time)} · ${escapeHtml(s.source||"Câmera")}</small></div></article>`
         ).join("") : '<article class="empty">Nenhum pedido registrado ainda.</article>';
       }
       function escapeHtml(value){
@@ -247,7 +262,7 @@
         $("hint").textContent=message;
         state.feedbackTimer=setTimeout(()=>{ if(!state.scanLocked&&!state.found.length)renderFound(); },duration);
       }
-      function register(value,manual=false){
+      function register(value,manual=false,source="Câmera"){
         const valueClean=normalizeCode(value);
         if(!isValidCode(valueClean)){
           if(manual)showToast("Informe um pedido de 16 dígitos ou uma chave de NF-e de 44 dígitos.");
@@ -262,15 +277,17 @@
           temporaryHint("Este código já foi lido",1100);
           return false;
         }
-        const record={value:valueClean,type:classify(valueClean),time:now()};
+        const record={value:valueClean,type:classify(valueClean),time:now(),source};
+        const scannerOpen=!$("scanner").classList.contains("hidden");
         state.scanLocked=true;
         state.found=[record];
         state.scans=[record,...state.scans];
-        saveState(); beep(); renderFound();
+        saveState(); beep();
+        if(scannerOpen)renderFound(); else render();
         clearTimeout(state.successTimer);
         state.successTimer=setTimeout(()=>{
           state.found=[]; state.scanLocked=false; state.candidate=""; state.candidateHits=0;
-          renderFound();
+          if(scannerOpen)renderFound();
         },280);
         return true;
       }
@@ -285,7 +302,7 @@
           }
           return false;
         }
-        return register(valueClean);
+        return register(valueClean,false,"Câmera");
       }
       async function constraint(key,value){
         const fallbackVideo=$("ios-reader").querySelector("video");
@@ -420,7 +437,21 @@
       });
       $("zoom").addEventListener("input",event=>setZoom(event.target.value));
       $("manual-form").addEventListener("submit",event=>{
-        event.preventDefault(); if(register($("manual-code").value,true))$("manual-code").value="";
+        event.preventDefault(); if(register($("manual-code").value,true,"Digitação manual"))$("manual-code").value="";
+      });
+      function submitExternalCode(){
+        clearTimeout(submitExternalCode.timer);
+        const input=$("external-code");
+        if(register(input.value,true,"Leitor externo"))input.value="";
+        input.focus({preventScroll:true});
+      }
+      $("external-form").addEventListener("submit",event=>{
+        event.preventDefault(); submitExternalCode();
+      });
+      $("external-code").addEventListener("input",event=>{
+        clearTimeout(submitExternalCode.timer);
+        const length=normalizeCode(event.target.value).length;
+        if(length===16||length===44)submitExternalCode.timer=setTimeout(submitExternalCode,140);
       });
       $("finish").addEventListener("click",()=>{
         closeScanner(); if(state.collection){state.collection.finishedAt=new Date().toISOString();saveState();}
