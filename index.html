@@ -231,7 +231,7 @@
   <script>
     (() => {
       "use strict";
-      const STORAGE_KEY = "nk-hub-coleta-v1";
+      const STORAGE_KEY = "nk-hub-coleta-v2";
       const detectorFormats = ["code_128"];
       const $ = (id) => document.getElementById(id);
       const state = { collection:null, scans:[], found:[], stream:null, detector:null, fallbackScanner:null, fallbackMode:false, timer:null, reading:false, zoom:1, zoomMin:1, zoomMax:2, autoZoomed:false, flash:false, candidate:"", candidateHits:0, candidateAt:0, lastInvalidAt:0, scanLocked:false, successTimer:null, feedbackTimer:null, lastDuplicate:"", lastDuplicateAt:0 };
@@ -568,9 +568,13 @@
         if(window.NKData&&NKData.configured)result=await NKData.finishCollection(state.collection,signature);
         if(result&&result.error){showToast("Falha ao salvar finalização: "+(result.error.message||"verifique o banco."),5200);return;}
         closeSignatureModal();
+        localStorage.removeItem("nk-hub-coleta-v1");
+        localStorage.removeItem(STORAGE_KEY);
         render();
         showToast("Coleta finalizada com "+state.scans.length+" registro(s).");
         openProof(signature);
+        state.collection=null; state.scans=[]; state.found=[];
+        render();
       }
       $("external-form").addEventListener("submit",event=>{
         event.preventDefault(); submitExternalCode();

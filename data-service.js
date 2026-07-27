@@ -22,9 +22,24 @@
     if(error)throw error;
     return data&&data.id;
   }
+  function collectionPayload(collection){
+    return {
+      collection_code:collection.id,carrier:collection.carrier,plate:collection.plate,
+      driver:collection.driver,helper:collection.helper||null,operator_id:user.id,
+      operator_email:user.email||"",started_at:collection.startedAt,status:"open"
+    };
+  }
+  async function ensureCollection(collection){
+    if(!collection||!collection.id)return null;
+    const existing=await collectionId(collection.id);
+    if(existing)return existing;
+    const {error}=await client.from("collections").upsert(collectionPayload(collection),{onConflict:"collection_code"});
+    if(error)throw error;
+    return collectionId(collection.id);
+  }
   async function execute(operation){
     if(operation.type==="collection"){
-      const {error}=await client.from("collections").upsert(operation.payload,{onConflict:"collection_code",ignoreDuplicates:true});
+      const {error}=await client.from("collections").upsert(operation.payload,{onConflict:"collection_code"});
       if(error)throw error;return;
     }
     const id=await collectionId(operation.payload.collection_code);
@@ -109,11 +124,7 @@
   async function signOut(){if(client)await client.auth.signOut();user=null}
   async function createCollection(collection){
     if(!user)return{ok:false,auth:true};
-    return run("collection",{
-      collection_code:collection.id,carrier:collection.carrier,plate:collection.plate,
-      driver:collection.driver,helper:collection.helper||null,operator_id:user.id,
-      operator_email:user.email||"",started_at:collection.startedAt,status:"open"
-    });
+    return run("collection",collectionPayload(collection));
   }
   async function lookupSaleRef(code){
     if(!configured||!user||!code||!/^\d{16}$/.test(String(code)))return null;
@@ -127,6 +138,7 @@
   }
   async function addScan(collection,record){
     if(!user)return{ok:false,auth:true};
+    if(navigator.onLine)await ensureCollection(collection).catch(()=>null);
     const ref=record.type==="Pedido" ? await lookupSaleRef(record.value) : null;
     return run("scan",{
       collection_code:collection.id,code_value:record.value,code_type:record.type,
@@ -138,12 +150,13 @@
     });
   }
   async function finishCollection(collection,signature){
+    if(user&&navigator.onLine)await ensureCollection(collection);
     return run("finish",{
       collection_code:collection.id,
       finished_at:collection.finishedAt||new Date().toISOString(),
       signature_name:signature&&signature.name,
       signature_data_url:signature&&signature.dataUrl,
-      signature_at:signature&&signature.signedAt
+      signature_at:(signature&&signature.at)||new Date().toISOString()
     });
   }
   window.NKData={configured,client,init,signIn,signOut,createCollection,addScan,finishCollection,lookupSaleRef,sync,getUser:()=>user,getPending:()=>readQueue().length};
