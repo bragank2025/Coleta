@@ -34,9 +34,16 @@ create table if not exists public.collections (
   operator_email text not null,
   started_at timestamptz not null default now(),
   finished_at timestamptz,
+  signature_name text,
+  signature_data_url text,
+  signature_at timestamptz,
   status text not null default 'open' check (status in ('open', 'finished')),
   created_at timestamptz not null default now()
 );
+
+alter table public.collections add column if not exists signature_name text;
+alter table public.collections add column if not exists signature_data_url text;
+alter table public.collections add column if not exists signature_at timestamptz;
 
 create table if not exists public.scans (
   id uuid primary key default gen_random_uuid(),
@@ -44,6 +51,9 @@ create table if not exists public.scans (
   code_value text not null unique,
   code_type text not null check (code_type in ('Pedido', 'NF')),
   source text not null check (source in ('Câmera', 'Leitor externo', 'Digitação manual')),
+  marketplace text,
+  venda text,
+  nf text,
   scanned_by uuid not null references public.profiles(id),
   scanned_by_email text not null,
   scanned_at timestamptz not null default now(),
@@ -52,6 +62,10 @@ create table if not exists public.scans (
     code_value ~ '^[0-9]{16}$' or code_value ~ '^[0-9]{44}$'
   )
 );
+
+alter table public.scans add column if not exists marketplace text;
+alter table public.scans add column if not exists venda text;
+alter table public.scans add column if not exists nf text;
 
 create index if not exists collections_started_at_idx on public.collections(started_at desc);
 create index if not exists collections_carrier_idx on public.collections(carrier);

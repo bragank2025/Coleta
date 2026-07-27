@@ -36,9 +36,20 @@
       return;
     }
     if(operation.type==="finish"){
-      const {error}=await client.from("collections").update({status:"finished",finished_at:operation.payload.finished_at}).eq("id",id);
+      const {error}=await client.from("collections").update({
+        status:"finished",
+        finished_at:operation.payload.finished_at,
+        signature_name:operation.payload.signature_name||null,
+        signature_data_url:operation.payload.signature_data_url||null,
+        signature_at:operation.payload.signature_at||null
+      }).eq("id",id);
       if(error)throw error;
     }
+  }
+  function shouldQueue(error){
+    if(!navigator.onLine)return true;
+    const message=String((error&&error.message)||"").toLowerCase();
+    return message.includes("network")||message.includes("fetch")||message.includes("failed to fetch");
   }
   async function sync(){
     if(!configured||!user||!navigator.onLine||syncing)return;
@@ -61,7 +72,8 @@
     try{await execute(operation);return{ok:true,queued:false}}
     catch(error){
       if(error&&error.code==="23505")return{ok:false,duplicate:true,error};
-      enqueue(type,payload);return{ok:true,queued:true,error};
+      if(shouldQueue(error)){enqueue(type,payload);return{ok:true,queued:true,error}}
+      return{ok:false,error};
     }
   }
   async function init(){
@@ -103,16 +115,36 @@
       operator_email:user.email||"",started_at:collection.startedAt,status:"open"
     });
   }
+  async function lookupSaleRef(code){
+    if(!configured||!user||!code||!/^\d{16}$/.test(String(code)))return null;
+    const {data,error}=await client.from("sales_invoice_refs")
+      .select("marketplace,venda,nf")
+      .eq("venda",String(code))
+      .limit(1)
+      .maybeSingle();
+    if(error)return null;
+    return data||null;
+  }
   async function addScan(collection,record){
     if(!user)return{ok:false,auth:true};
+    const ref=record.type==="Pedido" ? await lookupSaleRef(record.value) : null;
     return run("scan",{
       collection_code:collection.id,code_value:record.value,code_type:record.type,
+      marketplace:(ref&&ref.marketplace)||record.marketplace||null,
+      venda:(ref&&ref.venda)||record.venda||(record.type==="Pedido"?record.value:null),
+      nf:(ref&&ref.nf)||record.nf||(record.type==="NF"?record.value:null),
       source:record.source,scanned_by:user.id,scanned_by_email:user.email||"",
       scanned_at:new Date().toISOString()
     });
   }
-  async function finishCollection(collection){
-    return run("finish",{collection_code:collection.id,finished_at:collection.finishedAt||new Date().toISOString()});
+  async function finishCollection(collection,signature){
+    return run("finish",{
+      collection_code:collection.id,
+      finished_at:collection.finishedAt||new Date().toISOString(),
+      signature_name:signature&&signature.name,
+      signature_data_url:signature&&signature.dataUrl,
+      signature_at:signature&&signature.signedAt
+    });
   }
-  window.NKData={configured,client,init,signIn,signOut,createCollection,addScan,finishCollection,sync,getUser:()=>user,getPending:()=>readQueue().length};
+  window.NKData={configured,client,init,signIn,signOut,createCollection,addScan,finishCollection,lookupSaleRef,sync,getUser:()=>user,getPending:()=>readQueue().length};
 })();

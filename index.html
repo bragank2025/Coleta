@@ -1,11 +1,11 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#183a31">
-  <meta name="description" content="Conferência mobile de coleta e leitura de códigos de pedidos e DANFEs.">
-  <title>NK HUB | Conferência de Coleta</title>
+  <meta name="description" content="ConferÃªncia mobile de coleta e leitura de cÃ³digos de pedidos e DANFEs.">
+  <title>NK HUB | ConferÃªncia de Coleta</title>
   <style>
     :root{--ink:#14211e;--muted:#70817a;--line:#dfe8e2;--cream:#f7f7f2;--lime:#caff43;--dark:#183a31;--danger:#ff423c;--success:#30e56b}
     *{box-sizing:border-box}
@@ -108,6 +108,11 @@
     .account-bar{position:fixed;z-index:5;right:14px;top:calc(12px + env(safe-area-inset-top));display:flex;gap:6px}
     .account-bar a,.account-bar button{border:0;border-radius:9px;background:#e5eee8;color:var(--dark);padding:8px 9px;text-decoration:none;font-size:11px;font-weight:800}
     .sync-state{position:fixed;z-index:5;left:50%;bottom:calc(78px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#173c31;color:#fff;border-radius:20px;padding:7px 11px;font-size:10px;box-shadow:0 6px 20px #0003}
+    .signature-modal{position:fixed;z-index:40;inset:0;background:#08100dcc;display:grid;place-items:center;padding:18px}
+    .signature-card{width:min(500px,100%);background:#fff;border-radius:20px;padding:18px;color:var(--ink)}
+    .signature-card h2{margin:0 0 6px;font-size:24px;letter-spacing:-.04em}.signature-card p{font-size:13px}
+    .signature-card canvas{width:100%;height:180px;border:1px solid var(--line);border-radius:14px;background:#fff;margin-top:12px;touch-action:none}
+    .signature-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}.signature-actions button{border:0;border-radius:11px;padding:13px;font-weight:800}.signature-actions button:last-child{background:var(--lime);color:var(--dark)}
     @media(min-width:700px){.shell{box-shadow:0 0 45px #183a3118}}
   </style>
 </head>
@@ -116,7 +121,7 @@
     <form id="auth-form" class="auth-card">
       <div class="brand"><span class="brand-mark">N</span> NK HUB</div>
       <h2>Acesso ao coletor</h2>
-      <p>Entre com seu e-mail e senha para registrar a operação.</p>
+      <p>Entre com seu e-mail e senha para registrar a operaÃ§Ã£o.</p>
       <label>E-mail<input id="auth-email" type="email" autocomplete="username" required></label>
       <label>Senha<input id="auth-password" type="password" autocomplete="current-password" required></label>
       <button class="primary" type="submit">Entrar <span>IR</span></button>
@@ -127,9 +132,9 @@
   <div id="sync-state" class="sync-state hidden">Dados sincronizados</div>
   <main id="onboarding" class="shell onboarding">
     <div class="brand"><span class="brand-mark">N</span> NK HUB</div>
-    <div class="eyebrow">EXPEDIÇÃO</div>
-    <h1>Conferência de coleta,<br><em>sem ponto cego.</em></h1>
-    <p class="lead">Registre o pedido mesmo quando a chave da NF não estiver legível.</p>
+    <div class="eyebrow">EXPEDIÃ‡ÃƒO</div>
+    <h1>ConferÃªncia de coleta,<br><em>sem ponto cego.</em></h1>
+    <p class="lead">Registre o pedido mesmo quando a chave da NF nÃ£o estiver legÃ­vel.</p>
     <section class="setup-card">
       <div class="section-title">
         <span>01</span>
@@ -137,7 +142,7 @@
       </div>
       <form id="start-form">
         <label>Transportadora<input id="carrier" required value="Rodonaves" autocomplete="organization"></label>
-        <label>Placa do caminhão<input id="plate" required value="FPV-1234" autocomplete="off"></label>
+        <label>Placa do caminhÃ£o<input id="plate" required value="FPV-1234" autocomplete="off"></label>
         <label>Motorista<input id="driver" required value="Geraldo" autocomplete="name"></label>
         <label>Ajudante (opcional)<input id="helper" autocomplete="name"></label>
         <button class="primary" type="submit">Iniciar coleta <span>IR</span></button>
@@ -157,18 +162,18 @@
     <section class="stats">
       <div><b id="pedido-count">0</b><span>pedidos</span></div>
       <div><b id="nf-count">0</b><span>notas</span></div>
-      <div><b>0</b><span>pendências</span></div>
+      <div><b>0</b><span>pendÃªncias</span></div>
     </section>
     <section class="scan-area">
       <div class="scan-visual"><div class="scan-corners"></div><span class="scan-icon">|||</span></div>
       <h2>Pronto para bipar</h2>
-      <p>Leia o pedido. Se a chave da NF também ler, ela fica vinculada automaticamente.</p>
+      <p>Leia o pedido. Se a chave da NF tambÃ©m ler, ela fica vinculada automaticamente.</p>
       <button id="open-scanner" class="primary">Abrir leitor <span>SCAN</span></button>
     </section>
     <section class="external-reader">
-      <div class="external-head"><i></i><div><strong>Leitor adicional</strong><small>Compatível com leitores Bluetooth ou USB em modo teclado</small></div></div>
+      <div class="external-head"><i></i><div><strong>Leitor adicional</strong><small>CompatÃ­vel com leitores Bluetooth ou USB em modo teclado</small></div></div>
       <form id="external-form" class="external-form">
-        <input id="external-code" inputmode="none" autocomplete="off" placeholder="Toque aqui e bipe no leitor físico">
+        <input id="external-code" inputmode="none" autocomplete="off" placeholder="Toque aqui e bipe no leitor fÃ­sico">
         <button type="submit">Registrar</button>
       </form>
     </section>
@@ -184,28 +189,40 @@
     <div class="scanner-top">
       <button id="flash" aria-label="Ligar ou desligar flash">F</button>
       <strong>Escanear DANFE</strong>
-      <button id="close-scanner" aria-label="Fechar scanner">×</button>
+      <button id="close-scanner" aria-label="Fechar scanner">Ã—</button>
     </div>
     <div class="video-wrap">
       <video id="camera" autoplay playsinline muted></video>
       <div id="ios-reader" class="ios-reader hidden"></div>
       <div id="guide-box" class="guide-box"></div>
       <div id="detected-box" class="detected-box hidden"></div>
-      <div class="scanner-hint"><i id="hint-dot"></i><span id="hint">Aponte para o código de barras</span></div>
+      <div class="scanner-hint"><i id="hint-dot"></i><span id="hint">Aponte para o cÃ³digo de barras</span></div>
     </div>
     <div class="zoom-row">
       <span>Zoom</span>
-      <input id="zoom" aria-label="Zoom da câmera" type="range" min="1" max="2" step="0.1" value="1">
+      <input id="zoom" aria-label="Zoom da cÃ¢mera" type="range" min="1" max="2" step="0.1" value="1">
       <b id="zoom-value">1.0x</b>
     </div>
-    <div id="read-results" class="read-results"><p>Buscando código de barras...</p></div>
+    <div id="read-results" class="read-results"><p>Buscando cÃ³digo de barras...</p></div>
     <form id="manual-form" class="manual">
-      <input id="manual-code" inputmode="numeric" autocomplete="off" placeholder="Digite o pedido se necessário">
+      <input id="manual-code" inputmode="numeric" autocomplete="off" placeholder="Digite o pedido se necessÃ¡rio">
       <button type="submit">Ler</button>
     </form>
-    <div id="save-readings" class="save-readings">Leitura automática ativa <span>PRONTO</span></div>
+    <div id="save-readings" class="save-readings">Leitura automÃ¡tica ativa <span>PRONTO</span></div>
   </section>
   <div id="toast" class="toast hidden" role="status"></div>
+  <section id="signature-modal" class="signature-modal hidden">
+    <div class="signature-card">
+      <h2>Assinatura do motorista</h2>
+      <p>PeÃ§a para o motorista assinar para salvar o comprovante da conferÃªncia.</p>
+      <label>Nome de quem assinou<input id="signature-name" autocomplete="name" placeholder="Nome do motorista"></label>
+      <canvas id="signature-pad" width="900" height="320"></canvas>
+      <div class="signature-actions">
+        <button id="clear-signature" type="button">Limpar</button>
+        <button id="confirm-signature" type="button">Finalizar e salvar</button>
+      </div>
+    </div>
+  </section>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js" integrity="sha512-r6rDA7W6ZeQhvl8S7yRVQUKVHdexq+GAlNkNNqVC7YyIV+NwqCTJe2hDWCiffTyRNOeGEzRRJ9ifvRm/HCzGYg==" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -253,28 +270,37 @@
         if(!active)return;
         $("collection-id").textContent=state.collection.id;
         $("collection-carrier").textContent=state.collection.carrier;
-        $("collection-trip").textContent=state.collection.plate+" · "+state.collection.driver;
+        $("collection-trip").textContent=state.collection.plate+" Â· "+state.collection.driver;
         const pedidos=state.scans.filter(s=>s.type==="Pedido").length;
         const nfs=state.scans.filter(s=>s.type==="NF").length;
         $("pedido-count").textContent=pedidos; $("nf-count").textContent=nfs;
         $("item-count").textContent=state.scans.length+" "+(state.scans.length===1?"item":"itens");
         $("scan-list").innerHTML=state.scans.length ? state.scans.map(s=>
-          `<article><span class="check">OK</span><div><strong>${escapeHtml(s.type)}: ${escapeHtml(s.value)}</strong><small>Registrado às ${escapeHtml(s.time)} · ${escapeHtml(s.source||"Câmera")}</small></div></article>`
+          `<article><span class="check">OK</span><div><strong>${escapeHtml(s.type)}: ${escapeHtml(s.value)}</strong><small>${escapeHtml(scanMeta(s))}Registrado às ${escapeHtml(s.time)} · ${escapeHtml(s.source||"Câmera")}</small></div></article>`
         ).join("") : '<article class="empty">Nenhum pedido registrado ainda.</article>';
       }
       function escapeHtml(value){
         return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+      }
+      function scanMeta(scan){
+        return scan&&scan.marketplace ? `${scan.marketplace} Â· Venda ${scan.venda||scan.value} Â· NF ${scan.nf||"â€”"} Â· ` : "";
+      }
+      async function enrichRecord(record){
+        if(record.type!=="Pedido"||!window.NKData||!NKData.lookupSaleRef)return record;
+        const ref=await NKData.lookupSaleRef(record.value);
+        if(ref){record.marketplace=ref.marketplace;record.venda=ref.venda;record.nf=ref.nf;}
+        return record;
       }
       function renderFound(){
         const success=state.found.length>0;
         $("guide-box").classList.toggle("success",success);
         $("detected-box").classList.toggle("success",success);
         $("hint-dot").classList.toggle("green",success);
-        $("hint").textContent=success?"Código gravado":"Aponte para o próximo código";
+        $("hint").textContent=success?"CÃ³digo gravado":"Aponte para o prÃ³ximo cÃ³digo";
         $("read-results").innerHTML=success ? state.found.map(s=>
           `<div class="read-result"><small>${escapeHtml(s.type)} gravado automaticamente</small><strong>${escapeHtml(s.value)}</strong><span>OK</span></div>`
-        ).join("") : "<p>Leitor ativo — pronto para o próximo código.</p>";
-        $("save-readings").innerHTML=success ? "Registrado automaticamente <span>OK</span>" : "Leitura automática ativa <span>PRONTO</span>";
+        ).join("") : "<p>Leitor ativo â€” pronto para o prÃ³ximo cÃ³digo.</p>";
+        $("save-readings").innerHTML=success ? "Registrado automaticamente <span>OK</span>" : "Leitura automÃ¡tica ativa <span>PRONTO</span>";
       }
       function temporaryHint(message,duration=900){
         clearTimeout(state.feedbackTimer);
@@ -284,19 +310,19 @@
         $("hint").textContent=message;
         state.feedbackTimer=setTimeout(()=>{ if(!state.scanLocked&&!state.found.length)renderFound(); },duration);
       }
-      function register(value,manual=false,source="Câmera"){
+      function register(value,manual=false,source="CÃ¢mera"){
         const valueClean=normalizeCode(value);
         if(!isValidCode(valueClean)){
-          if(manual)showToast("Informe um pedido de 16 dígitos ou uma chave de NF-e de 44 dígitos.");
+          if(manual)showToast("Informe um pedido de 16 dÃ­gitos ou uma chave de NF-e de 44 dÃ­gitos.");
           return false;
         }
         if(state.scans.some(s=>s.value===valueClean)){
           const stamp=Date.now();
           if(state.lastDuplicate!==valueClean||stamp-state.lastDuplicateAt>1800){
             state.lastDuplicate=valueClean; state.lastDuplicateAt=stamp;
-            showToast("Código já lido: "+valueClean,1400);
+            showToast("CÃ³digo jÃ¡ lido: "+valueClean,1400);
           }
-          temporaryHint("Este código já foi lido",1100);
+          temporaryHint("Este cÃ³digo jÃ¡ foi lido",1100);
           return false;
         }
         const record={value:valueClean,type:classify(valueClean),time:now(),source};
@@ -307,10 +333,15 @@
         saveState(); beep();
         if(scannerOpen)renderFound(); else render();
         if(window.NKData&&NKData.configured){
+          enrichRecord(record).then(()=>{saveState();render();if(scannerOpen)renderFound();});
           NKData.addScan(state.collection,record).then(result=>{
             if(result&&result.duplicate){
               state.scans=state.scans.filter(scan=>scan.value!==record.value);
               saveState();render();showToast("Código já havia sido lido em outra coleta.");
+            }else if(result&&result.error){
+              showToast("Falha ao gravar no banco: "+(result.error.message||"verifique o acesso."),5200);
+            }else if(result&&result.queued){
+              showToast("Sem conexão: registro ficou na fila para sincronizar.");
             }
           });
         }
@@ -332,7 +363,7 @@
           }
           return false;
         }
-        return register(valueClean,false,"Câmera");
+        return register(valueClean,false,"CÃ¢mera");
       }
       async function constraint(key,value){
         const fallbackVideo=$("ios-reader").querySelector("video");
@@ -340,7 +371,7 @@
         const track=activeStream&&activeStream.getVideoTracks()[0];
         if(!track)return;
         try{ await track.applyConstraints({advanced:[{[key]:value}]}); }
-        catch{ if(key==="torch")showToast("O flash não está disponível nesta câmera."); }
+        catch{ if(key==="torch")showToast("O flash nÃ£o estÃ¡ disponÃ­vel nesta cÃ¢mera."); }
       }
       async function setZoom(value){
         state.zoom=Number(value); $("zoom").value=state.zoom; $("zoom-value").textContent=state.zoom.toFixed(1)+"x";
@@ -430,10 +461,10 @@
             state.detector=new BarcodeDetector({formats:detectorFormats});
             state.timer=setInterval(scanFrame,180);
           }else{
-            showToast("O leitor não carregou. Atualize a página e tente novamente.");
+            showToast("O leitor nÃ£o carregou. Atualize a pÃ¡gina e tente novamente.");
           }
         }catch{
-          showToast("Não foi possível acessar a câmera. Libere a permissão e tente novamente.");
+          showToast("NÃ£o foi possÃ­vel acessar a cÃ¢mera. Libere a permissÃ£o e tente novamente.");
         }
       }
       function closeScanner(){
@@ -468,13 +499,78 @@
       });
       $("zoom").addEventListener("input",event=>setZoom(event.target.value));
       $("manual-form").addEventListener("submit",event=>{
-        event.preventDefault(); if(register($("manual-code").value,true,"Digitação manual"))$("manual-code").value="";
+        event.preventDefault(); if(register($("manual-code").value,true,"DigitaÃ§Ã£o manual"))$("manual-code").value="";
       });
       function submitExternalCode(){
         clearTimeout(submitExternalCode.timer);
         const input=$("external-code");
         if(register(input.value,true,"Leitor externo"))input.value="";
         input.focus({preventScroll:true});
+      }
+      const signatureState={drawing:false,hasInk:false};
+      function signatureCanvas(){
+        return $("signature-pad");
+      }
+      function signaturePoint(event){
+        const canvas=signatureCanvas(),rect=canvas.getBoundingClientRect();
+        const touch=event.touches&&event.touches[0] ? event.touches[0] : event;
+        return {x:(touch.clientX-rect.left)*(canvas.width/rect.width),y:(touch.clientY-rect.top)*(canvas.height/rect.height)};
+      }
+      function resetSignaturePad(){
+        const canvas=signatureCanvas(),ctx=canvas.getContext("2d");
+        ctx.fillStyle="#ffffff";ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.lineCap="round";ctx.lineJoin="round";ctx.lineWidth=5;ctx.strokeStyle="#111827";
+        signatureState.hasInk=false;
+      }
+      function startSignature(event){
+        event.preventDefault();
+        signatureState.drawing=true;
+        const ctx=signatureCanvas().getContext("2d"),p=signaturePoint(event);
+        ctx.beginPath();ctx.moveTo(p.x,p.y);
+      }
+      function moveSignature(event){
+        if(!signatureState.drawing)return;
+        event.preventDefault();
+        const ctx=signatureCanvas().getContext("2d"),p=signaturePoint(event);
+        ctx.lineTo(p.x,p.y);ctx.stroke();signatureState.hasInk=true;
+      }
+      function stopSignature(){signatureState.drawing=false;}
+      function openSignatureModal(){
+        if(!state.collection||!state.scans.length){showToast("Nenhum código foi lido nesta coleta.");return;}
+        closeScanner();
+        $("signature-name").value=state.collection.driver||"";
+        $("signature-modal").classList.remove("hidden");
+        resetSignaturePad();
+      }
+      function closeSignatureModal(){
+        $("signature-modal").classList.add("hidden");
+      }
+      function proofHtml(signature){
+        const collection=state.collection||{};
+        const rows=state.scans.map(scan=>`<tr><td>${escapeHtml(scan.nf||scan.type==="NF"&&scan.value||"—")}</td><td>${escapeHtml(scan.marketplace||"—")}</td><td>${escapeHtml(scan.venda||scan.type==="Pedido"&&scan.value||"—")}</td><td>${escapeHtml(scan.time)}</td></tr>`).join("");
+        const pedidos=state.scans.filter(s=>s.type==="Pedido").length;
+        const nfs=state.scans.filter(s=>s.type==="NF").length;
+        return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Comprovante ${escapeHtml(collection.id||"")}</title><style>body{font-family:Arial,sans-serif;color:#111;margin:28px}h1{margin:0 0 4px}.muted{color:#666}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:18px 0}.card{border:1px solid #ddd;border-radius:10px;padding:10px}table{width:100%;border-collapse:collapse;margin-top:16px}th,td{border:1px solid #ddd;padding:7px;text-align:left;font-size:12px}th{background:#f3f4f6}.signature{margin-top:22px}.signature img{max-width:420px;border:1px solid #ddd;border-radius:8px;padding:8px}.actions{margin-bottom:18px}@media print{.actions{display:none}body{margin:12mm}}</style></head><body><div class="actions"><button onclick="window.print()">Salvar / imprimir PDF</button></div><h1>Comprovante de conferência de coleta</h1><div class="muted">Gerado em ${escapeHtml(now())}</div><div class="grid"><div class="card"><b>Coleta</b><br>${escapeHtml(collection.id||"—")}</div><div class="card"><b>Transportadora</b><br>${escapeHtml(collection.carrier||"—")}</div><div class="card"><b>Placa</b><br>${escapeHtml(collection.plate||"—")}</div><div class="card"><b>Motorista</b><br>${escapeHtml(collection.driver||"—")}</div><div class="card"><b>Início</b><br>${escapeHtml(collection.startedAt?new Date(collection.startedAt).toLocaleString("pt-BR"):"—")}</div><div class="card"><b>Fim</b><br>${escapeHtml(collection.finishedAt?new Date(collection.finishedAt).toLocaleString("pt-BR"):"—")}</div><div class="card"><b>Pedidos</b><br>${pedidos}</div><div class="card"><b>NFs</b><br>${nfs}</div></div><table><thead><tr><th>NF</th><th>Marketplace</th><th>Venda</th><th>Data e horário da conferência</th></tr></thead><tbody>${rows}</tbody></table><div class="signature"><h2>Assinatura do motorista</h2><p><b>${escapeHtml(signature.name||collection.driver||"—")}</b></p><img src="${signature.dataUrl}" alt="Assinatura"></div></body></html>`;
+      }
+      function openProof(signature){
+        const win=window.open("","_blank");
+        if(!win){showToast("Pop-up bloqueado. Libere para abrir o comprovante em PDF.",4200);return;}
+        win.document.open();win.document.write(proofHtml(signature));win.document.close();
+        setTimeout(()=>win.print(),450);
+      }
+      async function confirmFinishWithSignature(){
+        if(!signatureState.hasInk){showToast("Peça para o motorista assinar antes de finalizar.");return;}
+        state.collection.finishedAt=new Date().toISOString();
+        const signature={name:clean($("signature-name").value)||state.collection.driver,dataUrl:signatureCanvas().toDataURL("image/png"),at:new Date().toISOString()};
+        state.collection.signature=signature;
+        saveState();
+        let result={ok:true};
+        if(window.NKData&&NKData.configured)result=await NKData.finishCollection(state.collection,signature);
+        if(result&&result.error){showToast("Falha ao salvar finalização: "+(result.error.message||"verifique o banco."),5200);return;}
+        closeSignatureModal();
+        render();
+        showToast("Coleta finalizada com "+state.scans.length+" registro(s).");
+        openProof(signature);
       }
       $("external-form").addEventListener("submit",event=>{
         event.preventDefault(); submitExternalCode();
@@ -484,16 +580,20 @@
         const length=normalizeCode(event.target.value).length;
         if(length===16||length===44)submitExternalCode.timer=setTimeout(submitExternalCode,140);
       });
-      $("finish").addEventListener("click",()=>{
-        closeScanner(); if(state.collection){state.collection.finishedAt=new Date().toISOString();saveState();}
-        if(window.NKData&&NKData.configured&&state.collection)NKData.finishCollection(state.collection);
-        showToast("Coleta finalizada com "+state.scans.length+" registro(s).");
-      });
+      $("finish").addEventListener("click",openSignatureModal);
+      signatureCanvas().addEventListener("mousedown",startSignature);
+      signatureCanvas().addEventListener("mousemove",moveSignature);
+      window.addEventListener("mouseup",stopSignature);
+      signatureCanvas().addEventListener("touchstart",startSignature,{passive:false});
+      signatureCanvas().addEventListener("touchmove",moveSignature,{passive:false});
+      window.addEventListener("touchend",stopSignature);
+      $("clear-signature").addEventListener("click",resetSignaturePad);
+      $("confirm-signature").addEventListener("click",confirmFinishWithSignature);
       window.addEventListener("pagehide",()=>{ if(state.stream)state.stream.getTracks().forEach(t=>t.stop()); });
       $("auth-form").addEventListener("submit",async event=>{
         event.preventDefault();$("auth-message").textContent="Entrando...";
         const result=await NKData.signIn($("auth-email").value.trim(),$("auth-password").value);
-        if(result.error){$("auth-message").textContent=result.error.message||"E-mail ou senha inválidos.";return;}
+        if(result.error){$("auth-message").textContent=result.error.message||"E-mail ou senha invÃ¡lidos.";return;}
         $("auth-message").textContent="";$("auth-gate").classList.add("hidden");$("account-bar").classList.remove("hidden");
         loadState();render();
       });
@@ -502,17 +602,18 @@
       });
       window.addEventListener("nk-sync",event=>{
         const detail=event.detail||{},el=$("sync-state");
-        el.textContent=detail.status==="queued" ? `${detail.pending} registro(s) aguardando internet` : detail.status==="duplicate" ? "Código já existente no banco" : "Dados sincronizados";
+        el.textContent=detail.status==="queued" ? `${detail.pending} registro(s) aguardando internet` : detail.status==="duplicate" ? "CÃ³digo jÃ¡ existente no banco" : "Dados sincronizados";
         el.classList.remove("hidden");clearTimeout(el.timer);el.timer=setTimeout(()=>el.classList.add("hidden"),2600);
       });
       (async()=>{
         const auth=await NKData.init();
         if(auth.configured){
           if(auth.user){$("account-bar").classList.remove("hidden");loadState();render();}
-          else {$("auth-gate").classList.remove("hidden");if(auth.inactive)$("auth-message").textContent="Usuário sem liberação ativa. Peça para um administrador ativar o acesso.";}
+          else {$("auth-gate").classList.remove("hidden");if(auth.inactive)$("auth-message").textContent="UsuÃ¡rio sem liberaÃ§Ã£o ativa. PeÃ§a para um administrador ativar o acesso.";}
         }else{loadState();render();}
       })();
     })();
   </script>
 </body>
 </html>
+
