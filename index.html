@@ -493,7 +493,7 @@
       $("auth-form").addEventListener("submit",async event=>{
         event.preventDefault();$("auth-message").textContent="Entrando...";
         const result=await NKData.signIn($("auth-email").value.trim(),$("auth-password").value);
-        if(result.error){$("auth-message").textContent="E-mail ou senha inválidos.";return;}
+        if(result.error){$("auth-message").textContent=result.error.message||"E-mail ou senha inválidos.";return;}
         $("auth-message").textContent="";$("auth-gate").classList.add("hidden");$("account-bar").classList.remove("hidden");
         loadState();render();
       });
@@ -509,7 +509,7 @@
         const auth=await NKData.init();
         if(auth.configured){
           if(auth.user){$("account-bar").classList.remove("hidden");loadState();render();}
-          else $("auth-gate").classList.remove("hidden");
+          else {$("auth-gate").classList.remove("hidden");if(auth.inactive)$("auth-message").textContent="Usuário sem liberação ativa. Peça para um administrador ativar o acesso.";}
         }else{loadState();render();}
       })();
     })();

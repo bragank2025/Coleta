@@ -21,13 +21,13 @@
     main{max-width:1240px;margin:auto;padding:28px 20px 60px}.title-row{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:24px}
     h1{font-size:34px;letter-spacing:-.05em;margin:0 0 5px}.subtitle{color:var(--muted);margin:0}
     .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}.stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}.stat b{font-size:27px;display:block}.stat span{font-size:12px;color:var(--muted)}
-    .filters,.admin-create{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:9px;background:#fff;border:1px solid var(--line);padding:13px;border-radius:16px;margin-bottom:15px}.filters input,.filters select,.admin-create input,.admin-create select{margin:0}.filters button,.admin-create button{border:0;background:var(--dark);color:#fff;border-radius:10px;padding:0 15px;font-weight:800;cursor:pointer}
+    .filters,.admin-create,.import-card,.password-card{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:9px;background:#fff;border:1px solid var(--line);padding:13px;border-radius:16px;margin-bottom:15px}.filters input,.filters select,.admin-create input,.admin-create select,.import-card input,.password-card input{margin:0}.filters button,.admin-create button,.import-card button,.password-card button{border:0;background:var(--dark);color:#fff;border-radius:10px;padding:0 15px;font-weight:800;cursor:pointer}.import-card,.password-card{display:block}.import-card p,.password-card p{margin:0 0 10px;color:var(--muted);font-size:13px}.import-actions,.password-actions{display:flex;gap:9px;align-items:center}.import-actions input,.password-actions input{flex:1}.ref-search{display:grid;grid-template-columns:1fr auto;gap:9px;background:#fff;border:1px solid var(--line);padding:13px;border-radius:16px;margin-bottom:15px}.ref-search input{margin:0}.ref-search button{border:0;background:var(--dark);color:#fff;border-radius:10px;padding:0 15px;font-weight:800;cursor:pointer}
     .tabs{display:flex;gap:8px;margin:0 0 18px}.tabs button{border:1px solid var(--line);background:#fff;color:var(--dark);border-radius:10px;padding:10px 13px;font-weight:900;cursor:pointer}.tabs button.active{background:var(--dark);color:#fff;border-color:var(--dark)}
     .admin-panel{margin-top:30px}.admin-note{background:#fff4cf;border:1px solid #ead17f;color:#705a12;border-radius:12px;padding:13px;margin:0 0 15px;font-size:13px}.user-actions{display:grid;grid-template-columns:1fr 100px 92px auto;gap:8px;align-items:center}.user-actions select{margin:0;padding:9px}.user-actions button{border:0;background:#267153;color:#fff;border-radius:9px;padding:10px;font-weight:800;cursor:pointer}.user-actions button[disabled]{opacity:.55;cursor:not-allowed}
     .table-wrap{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:auto}table{width:100%;border-collapse:collapse;min-width:920px}th,td{text-align:left;border-bottom:1px solid #e7eee9;padding:13px;font-size:12px}th{color:var(--muted);font-size:10px;letter-spacing:.06em;background:#f9fbf9}tr:last-child td{border:0}.open-row{border:0;background:none;color:#267153;font-weight:900;cursor:pointer}.badge{display:inline-block;border-radius:20px;padding:5px 8px;background:#e5f4e8;color:#267153;font-weight:800}.badge.finished{background:#edf0ee;color:#62716b}
     .empty{text-align:center!important;color:var(--muted);padding:38px!important}
     dialog{width:min(760px,calc(100% - 30px));border:0;border-radius:20px;padding:0;box-shadow:0 25px 80px #0008}dialog::backdrop{background:#09100dbb}.dialog-head{padding:20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px}.dialog-head h2{margin:0}.dialog-head button{border:0;background:#edf2ee;border-radius:9px;width:36px;height:36px;cursor:pointer}.dialog-body{padding:20px;max-height:70vh;overflow:auto}.detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px}.detail-grid div{background:#f5f8f6;border-radius:10px;padding:11px}.detail-grid small,.detail-grid strong{display:block}.detail-grid small{color:var(--muted);margin-bottom:3px}.scan-row{display:grid;grid-template-columns:75px 1fr 125px 145px;gap:9px;border-top:1px solid var(--line);padding:11px 0;font-size:12px}.scan-row strong{overflow-wrap:anywhere}
-    @media(max-width:760px){header .user-email{display:none}.title-row{align-items:start;flex-direction:column}.stats{grid-template-columns:repeat(2,1fr)}.filters,.admin-create{grid-template-columns:1fr 1fr}.filters .search,.admin-create input:first-child{grid-column:1/-1}.filters button,.admin-create button{padding:13px}.detail-grid{grid-template-columns:1fr}.scan-row{grid-template-columns:65px 1fr}.scan-row span:nth-last-child(-n+2){color:var(--muted)}.user-actions{grid-template-columns:1fr}.user-actions button{padding:12px}}
+    @media(max-width:760px){header .user-email{display:none}.title-row{align-items:start;flex-direction:column}.stats{grid-template-columns:repeat(2,1fr)}.filters,.admin-create{grid-template-columns:1fr 1fr}.filters .search,.admin-create input:first-child{grid-column:1/-1}.filters button,.admin-create button,.import-card button,.password-card button,.ref-search button{padding:13px}.import-actions,.password-actions,.ref-search{display:grid;grid-template-columns:1fr}.detail-grid{grid-template-columns:1fr}.scan-row{grid-template-columns:65px 1fr}.scan-row span:nth-last-child(-n+2){color:var(--muted)}.user-actions{grid-template-columns:1fr}.user-actions button{padding:12px}}
   </style>
 </head>
 <body>
@@ -50,7 +50,7 @@
       <nav><span id="user-email" class="user-email"></span><a href="./">Coletor</a><button id="logout">Sair</button></nav>
     </header>
     <main>
-      <div class="tabs"><button id="tab-collections" class="active" type="button">Coletas</button><button id="tab-admin" class="hidden" type="button">Admin</button></div>
+      <div class="tabs"><button id="tab-collections" class="active" type="button">Coletas</button><button id="tab-refs" type="button">Venda/NF</button><button id="tab-account" type="button">Conta</button><button id="tab-admin" class="hidden" type="button">Admin</button></div>
       <section id="collections-panel">
       <div class="title-row"><div><h1>Histórico de coletas</h1><p class="subtitle">Auditoria centralizada de tudo que foi carregado.</p></div></div>
       <section class="stats">
@@ -73,9 +73,47 @@
         </table>
       </div>
       </section>
+      <section id="refs-panel" class="hidden">
+        <div class="title-row"><div><h1>Base Venda/NF</h1><p class="subtitle">Pesquise a fonte importada da planilha por venda ou nota fiscal.</p></div></div>
+        <section class="stats">
+          <div class="stat"><b id="stat-refs-total">0</b><span>vínculos importados</span></div>
+          <div class="stat"><b id="stat-refs-shopee">0</b><span>Shopee</span></div>
+          <div class="stat"><b id="stat-refs-mla">0</b><span>ML Autoparts</span></div>
+          <div class="stat"><b id="stat-refs-mlp">0</b><span>ML Autopeças</span></div>
+        </section>
+        <section class="ref-search">
+          <input id="ref-search" placeholder="Digite a venda ou NF para pesquisar">
+          <button id="ref-refresh" type="button">Atualizar</button>
+        </section>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>MARKETPLACE</th><th>VENDA</th><th>NF</th><th>ABA</th><th>IMPORTADO EM</th><th>IMPORTADO POR</th></tr></thead>
+            <tbody id="ref-rows"><tr><td class="empty" colspan="6">Carregando...</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+      <section id="account-panel" class="hidden">
+        <div class="title-row"><div><h1>Minha conta</h1><p class="subtitle">Troca segura de senha do usuário logado.</p></div></div>
+        <div class="password-card">
+          <p><strong>Trocar senha.</strong> Digite uma nova senha para o seu próprio usuário. Para outro usuário, um admin deve enviar o link de redefinição.</p>
+          <div class="password-actions">
+            <input id="own-password" type="password" placeholder="Nova senha do meu usuário" autocomplete="new-password">
+            <button id="change-own-password" type="button">Trocar minha senha</button>
+          </div>
+          <p id="password-message" class="message"></p>
+        </div>
+      </section>
       <section id="admin-panel" class="admin-panel hidden">
         <div class="title-row"><div><h1>Painel admin</h1><p class="subtitle">Cadastro e permissões de acesso ao coletor.</p></div></div>
-        <p class="admin-note">Novos usuários entram como visualizadores inativos até um admin liberar. A alteração de permissões é validada no banco, e o admin logado não consegue remover o próprio acesso administrativo.</p>
+        <p class="admin-note">Novos usuários entram como visualizadores inativos até um admin liberar. A alteração de permissões é validada no banco, e o admin logado não consegue remover o próprio acesso administrativo. Senhas de terceiros são redefinidas por link enviado ao e-mail do usuário.</p>
+        <div class="import-card">
+          <p><strong>Importar planilha Venda/NF.</strong> O sistema lê somente as abas SHOPEE, ML AUTOPARTS e ML AUTOPECAS, usando as colunas VENDA e NF. Registros repetidos não duplicam no banco.</p>
+          <div class="import-actions">
+            <input id="sales-file" type="file" accept=".xlsx,.xlsm,.xls">
+            <button id="import-sales" type="button">Importar Venda/NF</button>
+          </div>
+          <p id="import-message" class="message"></p>
+        </div>
         <form id="admin-create" class="admin-create">
           <input id="new-email" type="email" placeholder="E-mail do novo usuário" autocomplete="off" required>
           <input id="new-password" type="password" placeholder="Senha temporária" autocomplete="new-password" required>
@@ -99,6 +137,7 @@
     <div id="detail-body" class="dialog-body"></div>
   </dialog>
 
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="./supabase-config.js"></script>
   <script>
@@ -108,7 +147,7 @@
       const config=window.NK_SUPABASE||{};
       const configured=Boolean(config.url&&config.publishableKey);
       const client=configured?window.supabase.createClient(config.url,config.publishableKey):null;
-      let collections=[],filtered=[],profiles=[],currentUser=null,currentProfile=null;
+      let collections=[],filtered=[],profiles=[],refs=[],filteredRefs=[],currentUser=null,currentProfile=null;
       const escapeHtml=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
       const formatDate=value=>value?new Date(value).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"}):"—";
 
@@ -123,6 +162,11 @@
         currentUser=user;
         $("login").classList.add("hidden");$("app").classList.remove("hidden");$("user-email").textContent=user.email||"";
         await loadCurrentProfile();
+        if(!currentProfile||!currentProfile.active){
+          await client.auth.signOut();
+          $("login-message").textContent="Usuário sem liberação ativa. Peça para um administrador ativar o acesso.";
+          return;
+        }
         await loadCollections();
       }
       async function loadCurrentProfile(){
@@ -158,12 +202,38 @@
           return `<tr><td><strong>${escapeHtml(c.collection_code)}</strong></td><td>${escapeHtml(formatDate(c.started_at))}</td><td>${escapeHtml(c.carrier)}</td><td>${escapeHtml(c.plate)}</td><td>${escapeHtml(c.driver)}</td><td>${escapeHtml(c.operator_email)}</td><td>${pedidos}</td><td>${nfs}</td><td><span class="badge ${c.status==="finished"?"finished":""}">${c.status==="finished"?"Finalizada":"Em andamento"}</span></td><td><button class="open-row" data-id="${c.id}">Abrir</button></td></tr>`;
         }).join(""):'<tr><td class="empty" colspan="10">Nenhuma coleta encontrada.</td></tr>';
       }
+      async function loadRefs(){
+        $("ref-rows").innerHTML='<tr><td class="empty" colspan="6">Carregando...</td></tr>';
+        const {data,error}=await client.from("sales_invoice_refs")
+          .select("id,marketplace,venda,nf,sheet_name,imported_by_email,imported_at")
+          .order("imported_at",{ascending:false}).limit(5000);
+        if(error){$("ref-rows").innerHTML=`<tr><td class="empty" colspan="6">${escapeHtml(error.message)}</td></tr>`;return;}
+        refs=data||[];
+        applyRefFilters();
+      }
+      function applyRefFilters(){
+        const term=$("ref-search").value.trim().toLowerCase();
+        filteredRefs=refs.filter(r=>!term||[r.marketplace,r.venda,r.nf,r.sheet_name].join(" ").toLowerCase().includes(term));
+        renderRefs();
+      }
+      function renderRefs(){
+        $("stat-refs-total").textContent=refs.length;
+        $("stat-refs-shopee").textContent=refs.filter(r=>r.marketplace==="SHOPEE").length;
+        $("stat-refs-mla").textContent=refs.filter(r=>r.marketplace==="ML AUTOPARTS").length;
+        $("stat-refs-mlp").textContent=refs.filter(r=>r.marketplace==="ML AUTOPECAS").length;
+        $("ref-rows").innerHTML=filteredRefs.length?filteredRefs.slice(0,1000).map(r=>`<tr><td><strong>${escapeHtml(r.marketplace)}</strong></td><td>${escapeHtml(r.venda)}</td><td>${escapeHtml(r.nf)}</td><td>${escapeHtml(r.sheet_name)}</td><td>${escapeHtml(formatDate(r.imported_at))}</td><td>${escapeHtml(r.imported_by_email||"—")}</td></tr>`).join(""):'<tr><td class="empty" colspan="6">Nenhum vínculo Venda/NF encontrado.</td></tr>';
+      }
       function showPanel(panel){
-        const admin=panel==="admin";
-        $("collections-panel").classList.toggle("hidden",admin);
+        const admin=panel==="admin",refsPanel=panel==="refs",account=panel==="account";
+        $("collections-panel").classList.toggle("hidden",admin||refsPanel||account);
+        $("refs-panel").classList.toggle("hidden",!refsPanel);
+        $("account-panel").classList.toggle("hidden",!account);
         $("admin-panel").classList.toggle("hidden",!admin);
-        $("tab-collections").classList.toggle("active",!admin);
+        $("tab-collections").classList.toggle("active",panel==="collections");
+        $("tab-refs").classList.toggle("active",refsPanel);
+        $("tab-account").classList.toggle("active",account);
         $("tab-admin").classList.toggle("active",admin);
+        if(refsPanel)loadRefs();
         if(admin)loadProfiles();
       }
       async function loadProfiles(){
@@ -176,7 +246,7 @@
       }
       function profileRow(p){
         const self=p.id===currentUser.id;
-        return `<tr data-user-id="${escapeHtml(p.id)}"><td><strong>${escapeHtml(p.email)}</strong></td><td>${escapeHtml(p.full_name||"—")}</td><td><select data-field="role" ${self?"disabled":""}><option value="viewer" ${p.role==="viewer"?"selected":""}>Consulta</option><option value="operator" ${p.role==="operator"?"selected":""}>Operador</option><option value="admin" ${p.role==="admin"?"selected":""}>Admin</option></select></td><td><select data-field="active" ${self?"disabled":""}><option value="true" ${p.active?"selected":""}>Ativo</option><option value="false" ${!p.active?"selected":""}>Inativo</option></select></td><td><div class="user-actions"><span>${self?"Usuário atual":""}</span><button data-save-user ${self?"disabled":""}>Salvar</button></div></td></tr>`;
+        return `<tr data-user-id="${escapeHtml(p.id)}" data-email="${escapeHtml(p.email)}"><td><strong>${escapeHtml(p.email)}</strong></td><td>${escapeHtml(p.full_name||"—")}</td><td><select data-field="role" ${self?"disabled":""}><option value="viewer" ${p.role==="viewer"?"selected":""}>Consulta</option><option value="operator" ${p.role==="operator"?"selected":""}>Operador</option><option value="admin" ${p.role==="admin"?"selected":""}>Admin</option></select></td><td><select data-field="active" ${self?"disabled":""}><option value="true" ${p.active?"selected":""}>Ativo</option><option value="false" ${!p.active?"selected":""}>Inativo</option></select></td><td><div class="user-actions"><span>${self?"Usuário atual":""}</span><button data-save-user ${self?"disabled":""}>Salvar</button><button data-reset-password>Reset senha</button></div></td></tr>`;
       }
       async function updateProfile(row){
         const id=row.dataset.userId,role=row.querySelector('[data-field="role"]').value,active=row.querySelector('[data-field="active"]').value==="true";
@@ -185,26 +255,103 @@
         $("admin-message").textContent=error?error.message:"Usuário atualizado.";
         if(!error)loadProfiles();
       }
+      async function changeOwnPassword(){
+        const password=$("own-password").value;
+        if(password.length<6){$("password-message").textContent="Use uma senha com pelo menos 6 caracteres.";return;}
+        $("password-message").textContent="Atualizando senha...";
+        const {error}=await client.auth.updateUser({password});
+        $("password-message").textContent=error?error.message:"Senha alterada com sucesso.";
+        if(!error)$("own-password").value="";
+      }
+      async function sendPasswordReset(row){
+        const email=row.dataset.email;
+        $("admin-message").textContent="Enviando link de redefinição...";
+        const redirectTo=new URL("consulta.html",location.href).href;
+        const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo});
+        $("admin-message").textContent=error?error.message:`Link de redefinição enviado para ${email}.`;
+      }
       async function createAuthUser(email,password){
         const adminClient=window.supabase.createClient(config.url,config.publishableKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:"nk-admin-create-user"}});
         return adminClient.auth.signUp({email,password});
+      }
+      async function releaseUserByEmail(email,role,active){
+        return client.rpc("admin_upsert_profile_by_email",{target_email:email,new_role:role,new_active:active,new_full_name:null});
       }
       async function addUser(event){
         event.preventDefault();
         const email=$("new-email").value.trim().toLowerCase(),password=$("new-password").value,role=$("new-role").value,active=$("new-active").value==="true";
         $("admin-message").textContent="Criando usuário...";
         const signup=await createAuthUser(email,password);
-        if(signup.error){$("admin-message").textContent=signup.error.message;return;}
+        if(signup.error){
+          $("admin-message").textContent="Usuário já existe ou não pôde ser criado. Tentando liberar o acesso...";
+          const released=await releaseUserByEmail(email,role,active);
+          $("admin-message").textContent=released.error?released.error.message:"Usuário existente liberado/atualizado.";
+          if(!released.error){$("admin-create").reset();loadProfiles();}
+          return;
+        }
         let profile=null;
         for(let i=0;i<8;i++){
           const {data}=await client.from("profiles").select("id,email").eq("email",email).maybeSingle();
           if(data){profile=data;break;}
           await new Promise(resolve=>setTimeout(resolve,500));
         }
-        if(!profile){$("admin-message").textContent="Usuário criado no Auth, mas o perfil ainda não apareceu. Atualize a lista em alguns segundos.";loadProfiles();return;}
-        const {error}=await client.rpc("admin_update_profile",{target_id:profile.id,new_role:role,new_active:active,new_full_name:null});
+        const {error}=profile
+          ? await client.rpc("admin_update_profile",{target_id:profile.id,new_role:role,new_active:active,new_full_name:null})
+          : await releaseUserByEmail(email,role,active);
         $("admin-message").textContent=error?error.message:"Usuário criado e liberado.";
         if(!error){$("admin-create").reset();loadProfiles();}
+      }
+      const normalizeHeader=value=>String(value||"").trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
+      const normalizeCode=value=>{
+        if(value===null||value===undefined)return "";
+        if(typeof value==="number"&&Number.isFinite(value))return String(Math.trunc(value));
+        return String(value).trim().replace(/\.0$/,"");
+      };
+      function readSheetRows(workbook,sheetName){
+        const sheet=workbook.Sheets[sheetName];
+        if(!sheet)return [];
+        const matrix=XLSX.utils.sheet_to_json(sheet,{header:1,raw:false,defval:""});
+        const header=matrix[0]||[];
+        const vendaIndex=header.findIndex(cell=>normalizeHeader(cell)==="VENDA");
+        const nfIndex=header.findIndex(cell=>normalizeHeader(cell)==="NF");
+        if(vendaIndex<0||nfIndex<0)throw new Error(`Aba ${sheetName}: colunas VENDA e NF não encontradas.`);
+        const seen=new Set(),rows=[];
+        for(const row of matrix.slice(1)){
+          const venda=normalizeCode(row[vendaIndex]),nf=normalizeCode(row[nfIndex]);
+          if(!venda||!nf)continue;
+          const key=`${sheetName}|${venda}|${nf}`;
+          if(seen.has(key))continue;
+          seen.add(key);
+          rows.push({marketplace:sheetName,venda,nf,sheet_name:sheetName,imported_by:currentUser.id,imported_by_email:currentUser.email||"",updated_at:new Date().toISOString()});
+        }
+        return rows;
+      }
+      async function importSalesRefs(){
+        if(!(currentProfile&&currentProfile.role==="admin"&&currentProfile.active))return;
+        const file=$("sales-file").files&&$("sales-file").files[0];
+        if(!file){$("import-message").textContent="Selecione a planilha primeiro.";return;}
+        if(!window.XLSX){$("import-message").textContent="Biblioteca de leitura da planilha não carregou. Atualize a página e tente de novo.";return;}
+        $("import-message").textContent="Lendo planilha...";
+        try{
+          const buffer=await file.arrayBuffer();
+          const workbook=XLSX.read(buffer,{type:"array"});
+          const sheetNames=["SHOPEE","ML AUTOPARTS","ML AUTOPECAS"];
+          const rows=sheetNames.flatMap(name=>readSheetRows(workbook,name));
+          if(!rows.length){$("import-message").textContent="Nenhuma venda/NF válida encontrada.";return;}
+          $("import-message").textContent=`Gravando ${rows.length} vínculos...`;
+          let saved=0;
+          for(let i=0;i<rows.length;i+=500){
+            const chunk=rows.slice(i,i+500);
+            const {error}=await client.from("sales_invoice_refs").upsert(chunk,{onConflict:"marketplace,venda,nf"});
+            if(error)throw error;
+            saved+=chunk.length;
+            $("import-message").textContent=`Gravando ${saved}/${rows.length} vínculos...`;
+          }
+          $("import-message").textContent=`Importação concluída: ${rows.length} vínculos processados.`;
+          refs=[];filteredRefs=[];
+        }catch(error){
+          $("import-message").textContent=error.message||String(error);
+        }
       }
       function openDetails(id){
         const c=collections.find(item=>item.id===id);if(!c)return;
@@ -231,10 +378,21 @@
       });
       $("logout").addEventListener("click",()=>client.auth.signOut());
       $("tab-collections").addEventListener("click",()=>showPanel("collections"));
+      $("tab-refs").addEventListener("click",()=>showPanel("refs"));
+      $("tab-account").addEventListener("click",()=>showPanel("account"));
       $("tab-admin").addEventListener("click",()=>showPanel("admin"));
       $("admin-create").addEventListener("submit",addUser);
-      $("user-rows").addEventListener("click",event=>{const button=event.target.closest("[data-save-user]");if(button)updateProfile(button.closest("tr"))});
+      $("change-own-password").addEventListener("click",changeOwnPassword);
+      $("import-sales").addEventListener("click",importSalesRefs);
+      $("user-rows").addEventListener("click",event=>{
+        const save=event.target.closest("[data-save-user]");
+        const reset=event.target.closest("[data-reset-password]");
+        if(save)updateProfile(save.closest("tr"));
+        if(reset)sendPasswordReset(reset.closest("tr"));
+      });
       ["search","date-from","date-to","status"].forEach(id=>$(id).addEventListener("input",applyFilters));
+      $("ref-search").addEventListener("input",applyRefFilters);
+      $("ref-refresh").addEventListener("click",loadRefs);
       $("export").addEventListener("click",exportCsv);
       $("rows").addEventListener("click",event=>{const button=event.target.closest("[data-id]");if(button)openDetails(button.dataset.id)});
       $("close-details").addEventListener("click",()=>$("details").close());

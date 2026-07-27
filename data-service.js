@@ -67,14 +67,31 @@
   async function init(){
     if(!configured)return{configured:false,user:null};
     const {data}=await client.auth.getSession();user=data.session&&data.session.user;
+    if(user){
+      const active=await isActiveUser();
+      if(!active){await client.auth.signOut();user=null;return{configured:true,user:null,inactive:true}}
+    }
     client.auth.onAuthStateChange((_event,session)=>{user=session&&session.user;if(user)sync()});
     window.addEventListener("online",sync);
     if(user)sync();
     return{configured:true,user};
   }
+  async function isActiveUser(){
+    if(!user)return false;
+    const {data,error}=await client.from("profiles").select("id,active,role").eq("id",user.id).maybeSingle();
+    return !error&&data&&data.active&&data.role;
+  }
   async function signIn(email,password){
     const {data,error}=await client.auth.signInWithPassword({email,password});
-    if(!error){user=data.user;sync()}
+    if(!error){
+      user=data.user;
+      const active=await isActiveUser();
+      if(!active){
+        await client.auth.signOut();user=null;
+        return{user:null,error:{message:"Usuário sem liberação ativa."}};
+      }
+      sync()
+    }
     return{user:data&&data.user,error};
   }
   async function signOut(){if(client)await client.auth.signOut();user=null}
