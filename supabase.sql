@@ -146,6 +146,7 @@ on public.profiles for select to authenticated
 using (id = (select auth.uid()) or public.current_user_role() = 'admin');
 
 drop policy if exists "profiles_admin_update" on public.profiles;
+drop policy if exists "profiles_no_direct_update" on public.profiles;
 create policy "profiles_no_direct_update"
 on public.profiles for update to authenticated
 using (false)
