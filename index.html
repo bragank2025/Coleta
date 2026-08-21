@@ -157,8 +157,8 @@
     .auth-card{position:relative;overflow:hidden;border:1px solid #ffffff2a;background:linear-gradient(145deg,#fff,#f9f9fa);box-shadow:0 34px 110px #000a;animation:enter-card .75s cubic-bezier(.16,1,.3,1) both}.auth-card::before{content:"";height:3px;position:absolute;left:24px;right:24px;top:0;border-radius:99px;background:linear-gradient(90deg,transparent,#d91e36,transparent);animation:login-line 2.8s ease-in-out infinite}.auth-card .brand-mark{animation:mark-beat 2.5s ease-in-out infinite}.auth-card input{transition:transform .2s,border-color .2s,box-shadow .2s}.auth-card input:focus{transform:translateY(-1px);border-color:var(--red);box-shadow:0 0 0 4px #d91e3617}.auth-card .primary{position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}.auth-card .primary:hover{transform:translateY(-2px);box-shadow:0 14px 28px #d91e3645}.auth-card .primary::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 28%,#fff4 50%,transparent 70%);animation:button-shine 3.3s infinite}
     .shell{background:radial-gradient(circle at 100% 0,#d91e3608,transparent 26%),#fff}.shell::before{box-shadow:0 10px 30px #d91e3620}.setup-card,.external-reader,.scan-list article{border:0;box-shadow:0 16px 42px #1414140c}.setup-card{background:linear-gradient(145deg,#fff,#f9f9fa)}.section-title>span{box-shadow:0 8px 20px #d91e3635}.primary,.save-readings{transition:transform .2s,background .2s,box-shadow .2s}.primary:hover,.save-readings:hover{transform:translateY(-2px);box-shadow:0 16px 30px #14141427}.stats{box-shadow:0 14px 35px #1414140a}.stats div{transition:background .2s}.stats div:hover{background:#fff7f8}.scan-area{position:relative;overflow:hidden;background:linear-gradient(145deg,#171719,#090909)}.scan-area::before{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:#d91e3617;right:-120px;top:-150px}.reader-live,.reader-input-wrap,.camera-secondary,.scan-area>p{position:relative}.reader-input-wrap{transition:box-shadow .2s,transform .2s}.reader-input-wrap:focus-within{transform:translateY(-1px);box-shadow:0 0 0 6px #d91e3630}.external-reader{background:#fff}.finish{box-shadow:0 16px 42px #14141440}.account-bar{background:#ffffffdc;border:1px solid #e9e9eb;padding:5px;border-radius:16px;box-shadow:0 14px 35px #14141416;backdrop-filter:blur(14px)}.account-bar a,.account-bar button{width:35px;height:35px;padding:0;display:grid;place-items:center;border-radius:11px;font-size:0}.account-bar a i,.account-bar button i{font-size:13px}.account-bar a:hover,.account-bar button:hover{background:var(--red)}
     @keyframes float-orb{to{transform:translate(8vmax,-6vmax) scale(1.12)}}@keyframes enter-card{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}@keyframes login-line{0%,100%{opacity:.3;transform:scaleX(.4)}50%{opacity:1;transform:scaleX(1)}}@keyframes mark-beat{50%{transform:scale(1.08);box-shadow:0 11px 24px #d91e3655}}@keyframes button-shine{0%,55%{transform:translateX(-130%)}82%,100%{transform:translateX(130%)}}
-    .nk-splash{position:fixed;z-index:1000;inset:0;display:grid;place-items:center;background:#050505;color:#fff;overflow:hidden}.nk-splash-inner{display:grid;justify-items:center;gap:22px;animation:nk-splash-enter .32s ease-out both}.nk-splash-logo{width:118px;height:118px;object-fit:cover;border-radius:26px;box-shadow:0 18px 55px #000;transform:translateZ(0)}.nk-splash-loader{width:25px;height:25px;border:2px solid #ffffff24;border-top-color:#e41d32;border-radius:50%;animation:nk-loader .72s linear infinite}.nk-splash.is-launching{pointer-events:none}.nk-splash.is-launching .nk-splash-logo{animation:nk-logo-launch .62s cubic-bezier(.16,.84,.2,1) forwards}.nk-splash.is-launching .nk-splash-loader{animation:nk-loader .72s linear infinite,nk-loader-out .25s ease forwards}.nk-splash.is-launching .nk-splash-inner{animation:none}@keyframes nk-splash-enter{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}@keyframes nk-loader{to{transform:rotate(360deg)}}@keyframes nk-loader-out{to{opacity:0;transform:scale(.2)}}@keyframes nk-logo-launch{0%{opacity:1;transform:scale(1)}45%{opacity:1;transform:scale(1.12)}100%{opacity:0;transform:scale(13);filter:blur(3px)}}
-    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+    .nk-splash{position:fixed;z-index:1000;inset:0;display:grid;place-items:center;background:#050505;color:#fff;overflow:hidden}.nk-splash-inner{display:grid;justify-items:center;gap:28px;animation:nk-splash-enter .32s ease-out both}.nk-splash-logo{width:178px;height:178px;object-fit:cover;border-radius:34px;box-shadow:0 24px 70px #000;transform:translateZ(0)}.nk-splash-loader{width:42px;height:42px;box-sizing:border-box;border:4px solid #ffffff2e;border-top-color:#e41d32;border-right-color:#fff;border-radius:50%;animation:nk-loader .62s linear infinite;will-change:transform}.nk-splash.is-launching{pointer-events:none}.nk-splash.is-launching .nk-splash-logo{animation:nk-logo-launch .62s cubic-bezier(.16,.84,.2,1) forwards}.nk-splash.is-launching .nk-splash-loader{animation:nk-loader .62s linear infinite,nk-loader-out .25s ease forwards}.nk-splash.is-launching .nk-splash-inner{animation:none}@keyframes nk-splash-enter{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}@keyframes nk-loader{to{transform:rotate(360deg)}}@keyframes nk-loader-out{to{opacity:0;transform:scale(.2)}}@keyframes nk-logo-launch{0%{opacity:1;transform:scale(1)}45%{opacity:1;transform:scale(1.12)}100%{opacity:0;transform:scale(13);filter:blur(3px)}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.nk-splash-loader{animation:nk-loader .62s linear infinite!important}}
   </style>
 </head>
 <body>
@@ -670,15 +670,15 @@
       }
       function showSplash(){$("nk-splash").classList.remove("hidden","is-launching");}
       function hideSplash(){return new Promise(resolve=>{const splash=$("nk-splash");splash.classList.add("is-launching");setTimeout(()=>{splash.classList.add("hidden");splash.classList.remove("is-launching");resolve();},620);});}
-      async function openCollector(){
-        showSplash();$("auth-gate").classList.add("hidden");$("account-bar").classList.remove("hidden");
-        loadState();render();await hideSplash();focusPhysicalReader();
+      async function openCollector(playIntro=false){
+        if(playIntro)showSplash();$("auth-gate").classList.add("hidden");$("account-bar").classList.remove("hidden");
+        loadState();render();if(playIntro)await hideSplash();focusPhysicalReader();
       }
       async function loginCollector(emailValue,password){
         $("auth-message").textContent="Entrando...";
         const result=await NKData.signIn(normalizeLoginEmail(emailValue),password);
         if(result.error){$("auth-message").textContent=result.error.message||"E-mail ou senha inválidos.";return;}
-        $("auth-message").textContent="";await openCollector();
+        $("auth-message").textContent="";await openCollector(true);
       }
       $("auth-form").addEventListener("submit",async event=>{
         event.preventDefault();
@@ -696,7 +696,7 @@
       (async()=>{
         const auth=await NKData.init();
         if(auth.configured){
-          if(auth.user){await openCollector();}
+          if(auth.user){await openCollector(false);}
           else {$("auth-gate").classList.remove("hidden");if(auth.inactive)$("auth-message").textContent="Usuário sem liberação ativa. Peça para um administrador ativar o acesso.";}
         }else{loadState();render();}
       })();
