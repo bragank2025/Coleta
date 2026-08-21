@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#183a31">
   <title>NK HUB | Consultas de Coleta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
     :root{--ink:#14211e;--muted:#70817a;--line:#dfe8e2;--cream:#f7f7f2;--lime:#caff43;--dark:#183a31;--red:#d6433c}
     *{box-sizing:border-box} body{margin:0;background:#edf1ed;color:var(--ink);font-family:Arial,Helvetica,sans-serif}
@@ -16,6 +20,7 @@
     label{display:block;font-size:12px;font-weight:800;margin-top:14px}input,select{width:100%;border:1px solid #d5e0da;border-radius:11px;padding:13px;margin-top:6px;background:#fff;outline-color:#78a953}
     .primary{width:100%;margin-top:20px;border:0;border-radius:12px;padding:14px;background:var(--lime);color:var(--dark);font-weight:900;cursor:pointer}
     .message{margin-top:14px!important;color:var(--red)!important;font-size:13px}.setup{background:#fff4cf;border:1px solid #ead17f;padding:13px;border-radius:11px;color:#705a12!important}
+    .quick-login{width:100%;margin-top:9px;border:1px solid var(--line);border-radius:12px;padding:12px;background:#f5f8f6;color:var(--dark);font-weight:900;cursor:pointer}
     header{position:sticky;top:0;z-index:3;background:#fff;border-bottom:1px solid var(--line);padding:13px 22px;display:flex;align-items:center;justify-content:space-between;gap:15px}
     header nav{display:flex;align-items:center;gap:9px}header a,header button{border:0;background:#edf3ef;color:var(--dark);padding:9px 11px;border-radius:9px;text-decoration:none;font-weight:800;font-size:12px;cursor:pointer}
     main{max-width:1240px;margin:auto;padding:28px 20px 60px}.title-row{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:24px}
@@ -29,6 +34,16 @@
     dialog{width:min(760px,calc(100% - 30px));border:0;border-radius:20px;padding:0;box-shadow:0 25px 80px #0008}dialog::backdrop{background:#09100dbb}.dialog-head{padding:20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px}.dialog-head h2{margin:0}.dialog-head button{border:0;background:#edf2ee;border-radius:9px;width:36px;height:36px;cursor:pointer}.dialog-body{padding:20px;max-height:70vh;overflow:auto}.detail-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px}.detail-grid div{background:#f5f8f6;border-radius:10px;padding:11px}.detail-grid small,.detail-grid strong{display:block}.detail-grid small{color:var(--muted);margin-bottom:3px}.scan-row{display:grid;grid-template-columns:75px 1fr 125px 145px;gap:9px;border-top:1px solid var(--line);padding:11px 0;font-size:12px}.scan-row strong{overflow-wrap:anywhere}
     @media(max-width:760px){header .user-email{display:none}.title-row{align-items:start;flex-direction:column}.stats{grid-template-columns:repeat(2,1fr)}.filters,.admin-create{grid-template-columns:1fr 1fr}.filters .search,.admin-create input:first-child{grid-column:1/-1}.filters button,.admin-create button,.import-card button,.password-card button,.ref-search button{padding:13px}.import-actions,.password-actions,.ref-search{display:grid;grid-template-columns:1fr}.pager{justify-content:space-between}.detail-grid{grid-template-columns:1fr}.scan-row{grid-template-columns:65px 1fr}.scan-row span:nth-last-child(-n+2){color:var(--muted)}.user-actions{grid-template-columns:1fr}.user-actions button{padding:12px}}
   </style>
+  <style>
+    :root{--red:#d91e36;--red-dark:#a6172a;--black:#141414;--white:#fff;--gray:#6f6f75;--light:#f6f6f7;--line:#e9e9eb;--ff-display:'Space Grotesk',sans-serif;--ff-body:'Inter',sans-serif;--lime:var(--red);--dark:var(--black);--cream:var(--white);--ink:var(--black);--muted:var(--gray)}
+    body{background:var(--white);color:var(--black);font-family:var(--ff-body)}h1,h2,h3{font-family:var(--ff-display);letter-spacing:-.04em}.login{background:radial-gradient(circle at 80% 0,#3b3b3e,#141414 62%)}.login-card{border-radius:20px}.brand{font-family:var(--ff-display);font-weight:700}.mark{background:var(--red);color:#fff;box-shadow:0 8px 18px #d91e3630}
+    input,select{border-color:var(--line);outline-color:var(--red)}.primary{background:var(--black);color:#fff;border-radius:14px}.primary:hover{background:var(--red)}.quick-login{background:var(--light);border-color:var(--line);color:var(--black)}
+    header{background:#fff;border-top:4px solid var(--red);border-bottom-color:var(--line)}header a,header button{background:var(--light);color:var(--black)}header a:hover,header button:hover{background:var(--black);color:#fff}
+    main{max-width:1320px}.title-row h1{font-size:38px}.stats{gap:14px}.stat,.filters,.admin-create,.import-card,.password-card,.ref-search,.table-wrap{border-color:var(--line);box-shadow:0 8px 28px #14141408}.stat{border-radius:18px}.stat b{font-family:var(--ff-display);color:var(--red)}
+    .filters,.admin-create,.import-card,.password-card,.ref-search{background:var(--light);border-radius:18px}.filters button,.admin-create button,.import-card button,.password-card button,.ref-search button,.pager button{background:var(--black)}.filters button:hover,.admin-create button:hover,.import-card button:hover,.password-card button:hover,.ref-search button:hover,.pager button:hover{background:var(--red)}
+    .tabs{gap:7px}.tabs button{border-color:var(--line);border-radius:100px}.tabs button.active{background:var(--red);border-color:var(--red)}th{background:#fbfbfb;color:var(--gray)}.badge{background:#fff0f2;color:var(--red)}.badge.finished{background:#f1f1f2;color:var(--black)}.open-row{color:var(--red)}
+    dialog{border-radius:20px}.dialog-head{border-bottom-color:var(--line)}.dialog-head button{background:var(--light)}.detail-grid div{background:var(--light)}.admin-note{background:#fff0f2;border-color:#ffc9d0;color:var(--red)}.user-actions button{background:var(--red)}
+  </style>
 </head>
 <body>
   <section id="login" class="login">
@@ -37,9 +52,10 @@
       <h1>Consultas de coleta</h1>
       <p>Acesse o histórico central de viagens, pedidos e notas fiscais.</p>
       <div id="setup-warning" class="setup hidden">O projeto Supabase ainda precisa ser conectado para liberar o acesso.</div>
-      <label>E-mail<input id="email" type="email" autocomplete="username" required></label>
+      <label>E-mail ou usuário<input id="email" type="text" inputmode="email" autocomplete="username" required></label>
       <label>Senha<input id="password" type="password" autocomplete="current-password" required></label>
       <button class="primary" type="submit">Entrar</button>
+      <button id="quick-admin" class="quick-login" type="button">Entrar como admin/admin</button>
       <p id="login-message" class="message"></p>
     </form>
   </section>
@@ -412,11 +428,30 @@
         const csv="\ufeff"+rows.map(row=>row.map(v=>`"${String(v??"").replaceAll('"','""')}"`).join(";")).join("\r\n");
         const link=document.createElement("a");link.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));link.download="coletas-nk-hub.csv";link.click();URL.revokeObjectURL(link.href);
       }
+      function normalizeLoginEmail(value){
+        const login=String(value||"").trim().toLowerCase();
+        if(login==="admin")return "admin@autopecasnk.com.br";
+        return login;
+      }
+      async function loginWithCredentials(emailValue,password){
+        if(!configured||!client){
+          $("login-message").textContent="Supabase não conectado neste arquivo.";
+          return;
+        }
+        $("login-message").textContent="Entrando...";
+        const email=normalizeLoginEmail(emailValue);
+        const {error}=await client.auth.signInWithPassword({email,password});
+        if(error){
+          $("login-message").textContent=`Falha no login (${email}): ${error.message||"e-mail ou senha inválidos."}`;
+          return;
+        }
+        $("login-message").textContent="";
+      }
       $("login-form").addEventListener("submit",async event=>{
         event.preventDefault();$("login-message").textContent="Entrando...";
-        const {error}=await client.auth.signInWithPassword({email:$("email").value.trim(),password:$("password").value});
-        $("login-message").textContent=error?"E-mail ou senha inválidos.":"";
+        await loginWithCredentials($("email").value,$("password").value);
       });
+      $("quick-admin").addEventListener("click",()=>{ $("email").value="admin"; $("password").value="admin"; loginWithCredentials("admin","admin"); });
       $("logout").addEventListener("click",()=>client.auth.signOut());
       $("tab-collections").addEventListener("click",()=>showPanel("collections"));
       $("tab-refs").addEventListener("click",()=>showPanel("refs"));
