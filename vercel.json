@@ -1,0 +1,8 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/consulta", "destination": "/consulta.html" },
+    { "source": "/coletor", "destination": "/index.html" }
+  ]
+}
