@@ -26,7 +26,7 @@
     main{max-width:1240px;margin:auto;padding:28px 20px 60px}.title-row{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:24px}
     h1{font-size:34px;letter-spacing:-.05em;margin:0 0 5px}.subtitle{color:var(--muted);margin:0}
     .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}.stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px}.stat b{font-size:27px;display:block}.stat span{font-size:12px;color:var(--muted)}
-    .filters,.admin-create,.import-card,.password-card{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:9px;background:#fff;border:1px solid var(--line);padding:13px;border-radius:16px;margin-bottom:15px}.filters input,.filters select,.admin-create input,.admin-create select,.import-card input,.password-card input{margin:0}.filters button,.admin-create button,.import-card button,.password-card button{border:0;background:var(--dark);color:#fff;border-radius:10px;padding:0 15px;font-weight:800;cursor:pointer}.import-card,.password-card{display:block}.import-card p,.password-card p{margin:0 0 10px;color:var(--muted);font-size:13px}.import-actions,.password-actions{display:flex;gap:9px;align-items:center}.import-actions input,.password-actions input{flex:1}.ref-search{display:grid;grid-template-columns:1fr 180px auto;gap:9px;background:#fff;border:1px solid var(--line);padding:13px;border-radius:16px;margin-bottom:15px}.ref-search input,.ref-search select{margin:0}.ref-search button,.pager button{border:0;background:var(--dark);color:#fff;border-radius:10px;padding:0 15px;font-weight:800;cursor:pointer}.pager{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin:12px 0;color:var(--muted);font-weight:800}.pager button:disabled{opacity:.4;cursor:not-allowed}
+    .filters,.admin-create,.import-card,.password-card{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:9px;background:#fff;border:1px solid var(--line);padding:13px;border-radius:16px;margin-bottom:15px}.filters input,.filters select,.admin-create input,.admin-create select,.import-card input,.password-card input{margin:0}.filters button,.admin-create button,.import-card button,.password-card button{border:0;background:var(--dark);color:#fff;border-radius:10px;padding:0 15px;font-weight:800;cursor:pointer}.import-card,.password-card{display:block}.import-card p,.password-card p{margin:0 0 10px;color:var(--muted);font-size:13px}.import-actions,.password-actions{display:flex;gap:9px;align-items:center}.import-actions input,.password-actions input{flex:1}.ref-search{display:grid;grid-template-columns:1fr 180px 190px auto;gap:9px;background:#fff;border:1px solid var(--line);padding:13px;border-radius:16px;margin-bottom:15px}.ref-search input,.ref-search select{margin:0}.ref-search button,.pager button{border:0;background:var(--dark);color:#fff;border-radius:10px;padding:0 15px;font-weight:800;cursor:pointer}.pager{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin:12px 0;color:var(--muted);font-weight:800}.pager button:disabled{opacity:.4;cursor:not-allowed}
     .tabs{display:flex;gap:8px;margin:0 0 18px}.tabs button{border:1px solid var(--line);background:#fff;color:var(--dark);border-radius:10px;padding:10px 13px;font-weight:900;cursor:pointer}.tabs button.active{background:var(--dark);color:#fff;border-color:var(--dark)}
     .admin-panel{margin-top:30px}.admin-note{background:#fff4cf;border:1px solid #ead17f;color:#705a12;border-radius:12px;padding:13px;margin:0 0 15px;font-size:13px}.user-actions{display:grid;grid-template-columns:1fr 100px 92px auto;gap:8px;align-items:center}.user-actions select{margin:0;padding:9px}.user-actions button{border:0;background:#267153;color:#fff;border-radius:9px;padding:10px;font-weight:800;cursor:pointer}.user-actions button[disabled]{opacity:.55;cursor:not-allowed}
     .table-wrap{background:#fff;border:1px solid var(--line);border-radius:18px;overflow:auto}table{width:100%;border-collapse:collapse;min-width:920px}th,td{text-align:left;border-bottom:1px solid #e7eee9;padding:13px;font-size:12px}th{color:var(--muted);font-size:10px;letter-spacing:.06em;background:#f9fbf9}tr:last-child td{border:0}.open-row{border:0;background:none;color:#267153;font-weight:900;cursor:pointer}.badge{display:inline-block;border-radius:20px;padding:5px 8px;background:#e5f4e8;color:#267153;font-weight:800}.badge.finished{background:#edf0ee;color:#62716b}
@@ -127,13 +127,14 @@
             <option value="ML AUTOPARTS">ML Autoparts</option>
             <option value="ML AUTOPECAS">ML Autopeças</option>
           </select>
+          <select id="ref-month" aria-label="Mês da venda"></select>
           <button id="ref-refresh" type="button">Atualizar</button>
         </section>
         <div class="pager"><button id="ref-prev" type="button">Anterior</button><span id="ref-page">Página 1</span><button id="ref-next" type="button">Próxima</button></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>MARKETPLACE</th><th>VENDA</th><th>NF</th><th>ABA</th><th>IMPORTADO EM</th><th>IMPORTADO POR</th></tr></thead>
-            <tbody id="ref-rows"><tr><td class="empty" colspan="6">Carregando...</td></tr></tbody>
+            <thead><tr><th>DATA DA VENDA</th><th>MARKETPLACE</th><th>VENDA</th><th>NF</th><th>ABA</th><th>IMPORTADO EM</th><th>IMPORTADO POR</th></tr></thead>
+            <tbody id="ref-rows"><tr><td class="empty" colspan="7">Carregando...</td></tr></tbody>
           </table>
         </div>
       </section>
@@ -196,6 +197,9 @@
       const refsPageSize=100;
       const escapeHtml=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
       const formatDate=value=>value?new Date(value).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"}):"—";
+      const formatSaleDate=value=>{if(!value)return "Sem data";const [year,month,day]=String(value).slice(0,10).split("-");return year&&month&&day?`${day}/${month}/${year}`:"Sem data";};
+      const currentMonthKey=()=>new Date().toISOString().slice(0,7);
+      const monthLabel=value=>{const [year,month]=value.split("-");return new Intl.DateTimeFormat("pt-BR",{month:"long",year:"numeric"}).format(new Date(Number(year),Number(month)-1,1));};
 
       async function boot(){
         if(!configured){$("setup-warning").classList.remove("hidden");$("login-form").querySelector("button").disabled=true;return;}
@@ -256,29 +260,43 @@
         }).join(""):'<tr><td class="empty" colspan="10">Nenhuma coleta encontrada.</td></tr>';
       }
       async function loadRefs(){
-        $("ref-rows").innerHTML='<tr><td class="empty" colspan="6">Carregando...</td></tr>';
+        $("ref-rows").innerHTML='<tr><td class="empty" colspan="7">Carregando...</td></tr>';
         refs=[];
         let from=0,keepGoing=true;
         while(keepGoing){
           const to=from+999;
           const {data,error}=await client.from("sales_invoice_refs")
-            .select("id,marketplace,venda,nf,sheet_name,imported_by_email,imported_at")
+            .select("id,marketplace,venda,nf,sale_date,sheet_name,imported_by_email,imported_at")
+            .order("sale_date",{ascending:false,nullsFirst:false})
             .order("marketplace",{ascending:true})
-            .order("venda",{ascending:true})
             .range(from,to);
-          if(error){$("ref-rows").innerHTML=`<tr><td class="empty" colspan="6">${escapeHtml(error.message)}</td></tr>`;return;}
+          if(error){$("ref-rows").innerHTML=`<tr><td class="empty" colspan="7">${escapeHtml(error.message)}</td></tr>`;return;}
           refs=refs.concat(data||[]);
           keepGoing=(data||[]).length===1000;
           from+=1000;
-          $("ref-rows").innerHTML=`<tr><td class="empty" colspan="6">Carregando ${refs.length} vínculo(s)...</td></tr>`;
+          $("ref-rows").innerHTML=`<tr><td class="empty" colspan="7">Carregando ${refs.length} vínculo(s)...</td></tr>`;
         }
+        buildMonthFilter();
         refsPage=1;
         applyRefFilters();
+      }
+      function buildMonthFilter(){
+        const select=$("ref-month"),selected=select.value||currentMonthKey();
+        const months=[...new Set(refs.map(r=>String(r.sale_date||"").slice(0,7)).filter(Boolean))].sort().reverse();
+        const keys=[...new Set([currentMonthKey(),...months])];
+        select.innerHTML=`<option value="all">Todos os meses</option>${keys.map(key=>`<option value="${key}">${escapeHtml(monthLabel(key))}${key===currentMonthKey()?" · mês atual":""}</option>`).join("")}<option value="none">Sem data da venda</option>`;
+        select.value=keys.includes(selected)?selected:(selected==="all"||selected==="none"?selected:currentMonthKey());
       }
       function applyRefFilters(){
         const term=$("ref-search").value.trim().toLowerCase();
         const marketplace=$("ref-marketplace").value;
-        filteredRefs=refs.filter(r=>(!marketplace||r.marketplace===marketplace)&&(!term||[r.marketplace,r.venda,r.nf,r.sheet_name].join(" ").toLowerCase().includes(term)));
+        const month=$("ref-month").value||currentMonthKey();
+        filteredRefs=refs.filter(r=>{
+          const saleMonth=String(r.sale_date||"").slice(0,7);
+          return (!marketplace||r.marketplace===marketplace)
+            && (!term||[r.marketplace,r.venda,r.nf,r.sheet_name,r.sale_date].join(" ").toLowerCase().includes(term))
+            && (month==="all" || (month==="none" ? !r.sale_date : saleMonth===month));
+        });
         refsPage=1;
         renderRefs();
       }
@@ -294,7 +312,7 @@
         $("ref-page").textContent=`Página ${refsPage} de ${totalPages} · ${filteredRefs.length} vínculo(s)`;
         $("ref-prev").disabled=refsPage<=1;
         $("ref-next").disabled=refsPage>=totalPages;
-        $("ref-rows").innerHTML=pageRows.length?pageRows.map(r=>`<tr><td><strong>${escapeHtml(r.marketplace)}</strong></td><td>${escapeHtml(r.venda)}</td><td>${escapeHtml(r.nf)}</td><td>${escapeHtml(r.sheet_name)}</td><td>${escapeHtml(formatDate(r.imported_at))}</td><td>${escapeHtml(r.imported_by_email||"—")}</td></tr>`).join(""):'<tr><td class="empty" colspan="6">Nenhum vínculo Venda/NF encontrado.</td></tr>';
+        $("ref-rows").innerHTML=pageRows.length?pageRows.map(r=>`<tr><td>${escapeHtml(formatSaleDate(r.sale_date))}</td><td><strong>${escapeHtml(r.marketplace)}</strong></td><td>${escapeHtml(r.venda)}</td><td>${escapeHtml(r.nf)}</td><td>${escapeHtml(r.sheet_name)}</td><td>${escapeHtml(formatDate(r.imported_at))}</td><td>${escapeHtml(r.imported_by_email||"—")}</td></tr>`).join(""):'<tr><td class="empty" colspan="7">Nenhum vínculo Venda/NF encontrado neste mês.</td></tr>';
       }      function showPanel(panel){
         const admin=panel==="admin",refsPanel=panel==="refs",account=panel==="account";
         $("collections-panel").classList.toggle("hidden",admin||refsPanel||account);
@@ -386,22 +404,37 @@
         if(typeof value==="number"&&Number.isFinite(value))return String(Math.trunc(value));
         return String(value).trim().replace(/\.0$/,"");
       };
+      function normalizeSaleDate(value){
+        if(typeof value==="number"&&Number.isFinite(value)&&window.XLSX&&XLSX.SSF){
+          const excelDate=XLSX.SSF.parse_date_code(value);
+          if(excelDate&&excelDate.y&&excelDate.m&&excelDate.d)return `${excelDate.y}-${String(excelDate.m).padStart(2,"0")}-${String(excelDate.d).padStart(2,"0")}`;
+        }
+        if(value instanceof Date&&!Number.isNaN(value.getTime()))return `${value.getFullYear()}-${String(value.getMonth()+1).padStart(2,"0")}-${String(value.getDate()).padStart(2,"0")}`;
+        const raw=String(value??"").trim();
+        if(!raw)return null;
+        const match=raw.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{2,4})/);
+        if(match){const year=match[3].length===2?`20${match[3]}`:match[3];const parsed=new Date(`${year}-${match[2].padStart(2,"0")}-${match[1].padStart(2,"0")}T12:00:00`);return Number.isNaN(parsed.getTime())?null:`${year}-${match[2].padStart(2,"0")}-${match[1].padStart(2,"0")}`;}
+        const parsed=new Date(raw);return Number.isNaN(parsed.getTime())?null:parsed.toISOString().slice(0,10);
+      }
       function readSheetRows(workbook,sheetName){
         const sheet=workbook.Sheets[sheetName];
         if(!sheet)return [];
         const matrix=XLSX.utils.sheet_to_json(sheet,{header:1,raw:false,defval:""});
+        const rawMatrix=XLSX.utils.sheet_to_json(sheet,{header:1,raw:true,defval:null});
         const header=matrix[0]||[];
         const vendaIndex=header.findIndex(cell=>normalizeHeader(cell)==="VENDA");
         const nfIndex=header.findIndex(cell=>normalizeHeader(cell)==="NF");
+        const saleDateIndex=header.findIndex(cell=>["DATA","DATA VENDA","DATA DA VENDA"].includes(normalizeHeader(cell)));
         if(vendaIndex<0||nfIndex<0)throw new Error(`Aba ${sheetName}: colunas VENDA e NF não encontradas.`);
         const seen=new Set(),rows=[];
-        for(const row of matrix.slice(1)){
-          const venda=normalizeCode(row[vendaIndex]),nf=normalizeCode(row[nfIndex]);
+        for(const [rowOffset,row] of matrix.slice(1).entries()){
+          const rawRow=rawMatrix[rowOffset+1]||[];
+          const venda=normalizeCode(row[vendaIndex]),nf=normalizeCode(row[nfIndex]),sale_date=saleDateIndex>=0?normalizeSaleDate(rawRow[saleDateIndex]??row[saleDateIndex]):null;
           if(!venda||!nf)continue;
           const key=`${sheetName}|${venda}|${nf}`;
           if(seen.has(key))continue;
           seen.add(key);
-          rows.push({marketplace:sheetName,venda,nf,sheet_name:sheetName,imported_by:currentUser.id,imported_by_email:currentUser.email||"",updated_at:new Date().toISOString()});
+          rows.push({marketplace:sheetName,venda,nf,sale_date,sheet_name:sheetName,imported_by:currentUser.id,imported_by_email:currentUser.email||"",updated_at:new Date().toISOString()});
         }
         return rows;
       }
@@ -499,6 +532,7 @@
       ["search","date-from","date-to","status"].forEach(id=>$(id).addEventListener("input",applyFilters));
       $("ref-search").addEventListener("input",applyRefFilters);
       $("ref-marketplace").addEventListener("change",applyRefFilters);
+      $("ref-month").addEventListener("change",applyRefFilters);
       $("ref-refresh").addEventListener("click",loadRefs);
       $("ref-prev").addEventListener("click",()=>{refsPage--;renderRefs();});
       $("ref-next").addEventListener("click",()=>{refsPage++;renderRefs();});
