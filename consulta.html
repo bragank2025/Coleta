@@ -262,28 +262,38 @@
       async function loadRefs(){
         $("ref-rows").innerHTML='<tr><td class="empty" colspan="7">Carregando...</td></tr>';
         refs=[];
+        buildMonthFilter();
+        const month=$("ref-month").value||currentMonthKey();
         let from=0,keepGoing=true;
         while(keepGoing){
           const to=from+999;
-          const {data,error}=await client.from("sales_invoice_refs")
+          let query=client.from("sales_invoice_refs")
             .select("id,marketplace,venda,nf,sale_date,sheet_name,imported_by_email,imported_at")
             .order("sale_date",{ascending:false,nullsFirst:false})
-            .order("marketplace",{ascending:true})
-            .range(from,to);
+            .order("marketplace",{ascending:true});
+          if(month==="none")query=query.is("sale_date",null);
+          else if(month!=="all"){
+            const [year,monthNumber]=month.split("-").map(Number);
+            const nextMonth=new Date(Date.UTC(year,monthNumber,1)).toISOString().slice(0,7);
+            query=query.gte("sale_date",`${month}-01`).lt("sale_date",`${nextMonth}-01`);
+          }
+          const {data,error}=await query.range(from,to);
           if(error){$("ref-rows").innerHTML=`<tr><td class="empty" colspan="7">${escapeHtml(error.message)}</td></tr>`;return;}
           refs=refs.concat(data||[]);
           keepGoing=(data||[]).length===1000;
           from+=1000;
           $("ref-rows").innerHTML=`<tr><td class="empty" colspan="7">Carregando ${refs.length} vínculo(s)...</td></tr>`;
         }
-        buildMonthFilter();
         refsPage=1;
         applyRefFilters();
       }
       function buildMonthFilter(){
         const select=$("ref-month"),selected=select.value||currentMonthKey();
-        const months=[...new Set(refs.map(r=>String(r.sale_date||"").slice(0,7)).filter(Boolean))].sort().reverse();
-        const keys=[...new Set([currentMonthKey(),...months])];
+        const current=new Date(),keys=[];
+        for(let offset=0;offset<25;offset++){
+          const month=new Date(current.getFullYear(),current.getMonth()-offset,1);
+          keys.push(`${month.getFullYear()}-${String(month.getMonth()+1).padStart(2,"0")}`);
+        }
         select.innerHTML=`<option value="all">Todos os meses</option>${keys.map(key=>`<option value="${key}">${escapeHtml(monthLabel(key))}${key===currentMonthKey()?" · mês atual":""}</option>`).join("")}<option value="none">Sem data da venda</option>`;
         select.value=keys.includes(selected)?selected:(selected==="all"||selected==="none"?selected:currentMonthKey());
       }
@@ -532,7 +542,7 @@
       ["search","date-from","date-to","status"].forEach(id=>$(id).addEventListener("input",applyFilters));
       $("ref-search").addEventListener("input",applyRefFilters);
       $("ref-marketplace").addEventListener("change",applyRefFilters);
-      $("ref-month").addEventListener("change",applyRefFilters);
+      $("ref-month").addEventListener("change",loadRefs);
       $("ref-refresh").addEventListener("click",loadRefs);
       $("ref-prev").addEventListener("click",()=>{refsPage--;renderRefs();});
       $("ref-next").addEventListener("click",()=>{refsPage++;renderRefs();});
